@@ -187,3 +187,83 @@ impl FetchClient {
             .context("failed to read recommendations response body")
     }
 }
+
+#[cfg(test)]
+mod tests {
+    #![allow(clippy::expect_used)]
+    use super::*;
+    use arxiv_search_rs_mcp_core::{
+        arxiv::{build_query_params, normalize_paper_id, parse_response},
+        html::to_markdown,
+        semantic_scholar::{parse_citations, parse_recommendations},
+    };
+
+    const ATTENTION_PAPER_ID: &str = "1706.03762";
+
+    fn make_client() -> FetchClient {
+        FetchClient::new(std::env::var("SEMANTIC_SCHOLAR_API_KEY").ok())
+            .expect("failed to build test client")
+    }
+
+    #[tokio::test]
+    #[ignore = "requires network"]
+    async fn search_returns_results() {
+        let client = make_client();
+        let params =
+            build_query_params("attention mechanism transformer", 5, None, None, &[], "relevance")
+                .expect("failed to build query params");
+        let xml = client.fetch_arxiv_query(&params).await.expect("fetch failed");
+        let papers = parse_response(&xml).expect("parse failed");
+        assert!(!papers.is_empty(), "search returned no results");
+        assert!(!papers[0].title.is_empty());
+    }
+
+    #[tokio::test]
+    #[ignore = "requires network"]
+    async fn get_abstract_known_paper() {
+        let client = make_client();
+        let id = normalize_paper_id(ATTENTION_PAPER_ID).expect("normalize failed");
+        let xml = client.fetch_arxiv_by_id(&id).await.expect("fetch failed");
+        let papers = parse_response(&xml).expect("parse failed");
+        assert_eq!(papers.len(), 1);
+        assert!(
+            papers[0].title.to_lowercase().contains("attention"),
+            "unexpected title: {}",
+            papers[0].title
+        );
+    }
+
+    #[tokio::test]
+    #[ignore = "requires network"]
+    async fn download_paper_html_path() {
+        let client = make_client();
+        let html = client.fetch_html("2303.08774").await.expect("fetch failed");
+        assert!(html.is_some(), "expected HTML to be available for this paper");
+        let md = to_markdown(html.as_deref().expect("html was None")).expect("markdown failed");
+        assert!(md.len() > 100, "markdown output was suspiciously short");
+    }
+
+    #[tokio::test]
+    #[ignore = "requires network"]
+    async fn citations_returns_results() {
+        let client = make_client();
+        let json = client
+            .fetch_citations(ATTENTION_PAPER_ID, 5)
+            .await
+            .expect("fetch failed");
+        let papers = parse_citations(&json).expect("parse failed");
+        assert!(!papers.is_empty(), "expected citations for attention paper");
+    }
+
+    #[tokio::test]
+    #[ignore = "requires network"]
+    async fn recommendations_returns_results() {
+        let client = make_client();
+        let json = client
+            .fetch_recommendations(ATTENTION_PAPER_ID, 5)
+            .await
+            .expect("fetch failed");
+        let papers = parse_recommendations(&json).expect("parse failed");
+        assert!(!papers.is_empty(), "expected recommendations for attention paper");
+    }
+}
