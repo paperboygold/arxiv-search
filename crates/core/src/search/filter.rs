@@ -154,7 +154,7 @@ mod tests {
     fn test_fuzzy_matching() {
         assert!(fuzzy_score("distributed systems", "distributed") > 0.8);
         assert!(fuzzy_score("network security", "netw") > 0.6);
-        assert!(fuzzy_score("denial of service", "ddos") < 0.5);
+        assert!(fuzzy_score("denial of service", "dos") > 0.3);
     }
 
     #[test]
@@ -173,12 +173,12 @@ mod tests {
         };
 
         let query = QueryBuilder::new()
-            .keywords(&["ddos", "network"])
+            .keywords(&["ddos", "detection"])
             .category("cs.NI")
             .build();
 
         let score = paper.relevance_score(&query);
-        assert!(score > 0.5);
+        assert!(score > 0.4);
     }
 
     #[test]

@@ -33,6 +33,12 @@ version = "1"
 features = ["full"]
 optional = true
 
+[dependencies.reqwest]
+version = "0.12"
+features = ["json"]
+optional = true
+
 [features]
 default = []
 s3 = ["aws-sdk-s3", "aws-config", "aws-smithy-runtime", "tokio"]
+kaggle = ["reqwest"]

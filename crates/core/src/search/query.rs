@@ -1,15 +1,42 @@
 use serde::{Deserialize, Serialize};
 
-/// arXiv category codes for infrastructure/networking domains
+/// arXiv category codes (reference)
+/// Full list: https://arxiv.org/category_taxonomy
 pub mod categories {
-    pub const CS_NI: &str = "cs.NI"; // Networking and Internet Architecture
-    pub const CS_SY: &str = "cs.SY"; // Systems and Control
-    pub const CS_DC: &str = "cs.DC"; // Distributed, Parallel, and Cluster Computing
-    pub const CS_CR: &str = "cs.CR"; // Cryptography and Security
-    pub const CS_SE: &str = "cs.SE"; // Software Engineering
-    pub const CS_OS: &str = "cs.OS"; // Operating Systems
+    // Computer Science
     pub const CS_AI: &str = "cs.AI"; // Artificial Intelligence
+    pub const CS_CC: &str = "cs.CC"; // Computational Complexity
+    pub const CS_CR: &str = "cs.CR"; // Cryptography and Security
+    pub const CS_CV: &str = "cs.CV"; // Computer Vision
+    pub const CS_CY: &str = "cs.CY"; // Computers and Society
+    pub const CS_DB: &str = "cs.DB"; // Databases
+    pub const CS_DC: &str = "cs.DC"; // Distributed, Parallel, Cluster Computing
+    pub const CS_DL: &str = "cs.DL"; // Digital Libraries
+    pub const CS_DM: &str = "cs.DM"; // Discrete Mathematics
+    pub const CS_DS: &str = "cs.DS"; // Data Structures and Algorithms
+    pub const CS_ET: &str = "cs.ET"; // Emerging Technologies
+    pub const CS_GL: &str = "cs.GL"; // General Literature
+    pub const CS_GR: &str = "cs.GR"; // Graphics
+    pub const CS_GT: &str = "cs.GT"; // Computer Science and Game Theory
+    pub const CS_HC: &str = "cs.HC"; // Human-Computer Interaction
+    pub const CS_IR: &str = "cs.IR"; // Information Retrieval
+    pub const CS_IT: &str = "cs.IT"; // Information Theory
     pub const CS_LG: &str = "cs.LG"; // Machine Learning
+    pub const CS_LO: &str = "cs.LO"; // Logic in Computer Science
+    pub const CS_MA: &str = "cs.MA"; // Multiagent Systems
+    pub const CS_MM: &str = "cs.MM"; // Multimedia
+    pub const CS_MS: &str = "cs.MS"; // Mathematical Software
+    pub const CS_NA: &str = "cs.NA"; // Numerical Analysis
+    pub const CS_NE: &str = "cs.NE"; // Neural and Evolutionary Computing
+    pub const CS_NI: &str = "cs.NI"; // Networking and Internet Architecture
+    pub const CS_OH: &str = "cs.OH"; // Other Computer Science
+    pub const CS_OS: &str = "cs.OS"; // Operating Systems
+    pub const CS_PL: &str = "cs.PL"; // Programming Languages
+    pub const CS_RO: &str = "cs.RO"; // Robotics
+    pub const CS_SC: &str = "cs.SC"; // Symbolic Computation
+    pub const CS_SD: &str = "cs.SD"; // Sound
+    pub const CS_SE: &str = "cs.SE"; // Software Engineering
+    pub const CS_SY: &str = "cs.SY"; // Systems and Control
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -102,146 +129,14 @@ impl Default for QueryBuilder {
     }
 }
 
-/// Pre-built queries for common infrastructure domains
-pub mod presets {
-    use super::*;
-
-    pub fn networking() -> SearchQuery {
-        QueryBuilder::new()
-            .keywords(&[
-                "networking",
-                "network architecture",
-                "internet protocol",
-                "tcp/ip",
-                "routing",
-                "bandwidth",
-                "latency",
-                "throughput",
-            ])
-            .category(categories::CS_NI)
-            .min_relevance(0.6)
-            .build()
-    }
-
-    pub fn ddos_prevention() -> SearchQuery {
-        QueryBuilder::new()
-            .keywords(&[
-                "ddos",
-                "denial of service",
-                "attack detection",
-                "anomaly detection",
-                "rate limiting",
-                "traffic filtering",
-                "intrusion detection",
-                "network security",
-            ])
-            .categories(&[categories::CS_NI, categories::CS_CR, categories::CS_SY])
-            .min_relevance(0.7)
-            .build()
-    }
-
-    pub fn siem_soar() -> SearchQuery {
-        QueryBuilder::new()
-            .keywords(&[
-                "siem",
-                "security information",
-                "event management",
-                "soar",
-                "security orchestration",
-                "incident response",
-                "threat detection",
-                "log analysis",
-                "security analytics",
-            ])
-            .categories(&[categories::CS_CR, categories::CS_SY, categories::CS_AI])
-            .min_relevance(0.7)
-            .build()
-    }
-
-    pub fn virtual_hosting() -> SearchQuery {
-        QueryBuilder::new()
-            .keywords(&[
-                "virtualization",
-                "hypervisor",
-                "container",
-                "kubernetes",
-                "resource allocation",
-                "vm placement",
-                "orchestration",
-                "cloud infrastructure",
-            ])
-            .categories(&[categories::CS_DC, categories::CS_OS, categories::CS_SY])
-            .min_relevance(0.6)
-            .build()
-    }
-
-    pub fn storage_optimization() -> SearchQuery {
-        QueryBuilder::new()
-            .keywords(&[
-                "storage",
-                "distributed storage",
-                "data replication",
-                "caching",
-                "deduplication",
-                "compression",
-                "tiered storage",
-                "i/o optimization",
-            ])
-            .categories(&[categories::CS_DC, categories::CS_SY, categories::CS_OS])
-            .min_relevance(0.6)
-            .build()
-    }
-
-    pub fn infrastructure_optimization() -> SearchQuery {
-        QueryBuilder::new()
-            .keywords(&[
-                "optimization",
-                "performance",
-                "scalability",
-                "resource efficiency",
-                "bottleneck",
-                "profiling",
-                "monitoring",
-                "tuning",
-            ])
-            .categories(&[
-                categories::CS_DC,
-                categories::CS_SY,
-                categories::CS_OS,
-                categories::CS_SE,
-            ])
-            .min_relevance(0.5)
-            .build()
-    }
-
-    /// Composite: everything relevant to your infrastructure stack
-    pub fn your_stack() -> SearchQuery {
-        QueryBuilder::new()
-            .keywords(&[
-                "networking",
-                "ddos",
-                "security",
-                "virtualization",
-                "storage",
-                "optimization",
-                "performance",
-                "distributed",
-                "cloud",
-                "infrastructure",
-                "orchestration",
-                "monitoring",
-            ])
-            .categories(&[
-                categories::CS_NI,
-                categories::CS_CR,
-                categories::CS_DC,
-                categories::CS_SY,
-                categories::CS_OS,
-            ])
-            .min_relevance(0.55)
-            .build()
-    }
-}
+// Presets are dynamically generated from metadata using MetadataAnalyzer.
+// See: crate::metadata::analyzer::MetadataAnalyzer::detect_themes()
+//
+// To get presets for your domain:
+// 1. Load Kaggle metadata: let papers = KaggleLoader::load_from_file("arxiv-metadata.json")?;
+// 2. Analyze: let analyzer = MetadataAnalyzer::new(papers);
+// 3. Get themes: let presets = analyzer.detect_themes();
+// 4. Or create custom: let preset = analyzer.preset_from_keywords(&["ddos", "detection"], None);
 
 #[cfg(test)]
 mod tests {
@@ -261,12 +156,22 @@ mod tests {
     }
 
     #[test]
-    fn test_presets() {
-        let ddos = presets::ddos_prevention();
-        assert!(!ddos.keywords.is_empty());
-        assert!(!ddos.categories.is_empty());
+    fn test_exclude_keywords() {
+        let query = QueryBuilder::new()
+            .keywords(&["security"])
+            .exclude("machine learning")
+            .build();
 
-        let stack = presets::your_stack();
-        assert!(stack.keywords.len() > 10);
+        assert_eq!(query.exclude_keywords.len(), 1);
+    }
+
+    #[test]
+    fn test_date_range() {
+        let query = QueryBuilder::new()
+            .keywords(&["security"])
+            .since("2024-01")
+            .build();
+
+        assert!(query.date_range.is_some());
     }
 }
