@@ -34,26 +34,40 @@ struct RpcError {
     message: String,
 }
 
+/// Input for the search_papers tool.
+/// Maps to arXiv's search query parameters.
 #[derive(Debug, Deserialize)]
 struct SearchInput {
+    /// The search query string. Supports arXiv field tags (ti, au, abs, etc.) and boolean operators (AND, OR, ANDNOT).
     q: String,
+    /// Maximum number of results to return (default: 10).
     #[serde(default = "default_n")]
     n: u32,
+    /// Filter results by start date (YYYY-MM-DD).
     from: Option<String>,
+    /// Filter results by end date (YYYY-MM-DD).
     to: Option<String>,
+    /// arXiv categories to search in (e.g., cs.AI, physics.gen-ph).
     #[serde(default)]
     cats: Vec<String>,
+    /// Sort strategy: "relevance" or "date" (default: "relevance").
     #[serde(default = "default_sort")]
     sort: String,
 }
 
+/// Input for the retrieve_paper tool.
+/// Fetches full text or abstract and prepares it for LLM ingestion.
 #[derive(Debug, Deserialize)]
 struct RetrieveInput {
+    /// The arXiv paper ID (e.g., "2303.08774" or "quant-ph/0201082").
     paper_id: String,
+    /// Whether to remove the references section to save tokens (default: true).
     #[serde(default = "default_true")]
     prune_references: bool,
+    /// Target size of text chunks for processing (default: 4000).
     #[serde(default = "default_chunk_chars")]
     chunk_chars: usize,
+    /// Number of characters to overlap between chunks (default: 200).
     #[serde(default = "default_chunk_overlap")]
     chunk_overlap: usize,
 }
@@ -174,7 +188,9 @@ async fn fetch_html(paper_id: &str) -> std::result::Result<Option<String>, Strin
 }
 
 async fn handle_search_papers(args: &serde_json::Value) -> std::result::Result<String, String> {
-    let input: SearchInput = serde_json::from_value(args.clone()).map_err(|e| e.to_string())?;
+    let input: SearchInput = serde_json::from_value(args.clone()).map_err(|e| {
+        format!("Invalid search parameters: {}. Expected format: {{ \"q\": \"query\", \"n\": 10, ... }}", e)
+    })?;
     let params = build_query_params(
         &input.q,
         input.n,
@@ -190,7 +206,9 @@ async fn handle_search_papers(args: &serde_json::Value) -> std::result::Result<S
 }
 
 async fn handle_retrieve_paper(args: &serde_json::Value) -> std::result::Result<String, String> {
-    let input: RetrieveInput = serde_json::from_value(args.clone()).map_err(|e| e.to_string())?;
+    let input: RetrieveInput = serde_json::from_value(args.clone()).map_err(|e| {
+        format!("Invalid retrieve parameters: {}. Expected format: {{ \"paper_id\": \"id\", ... }}", e)
+    })?;
     let paper_id = normalize_paper_id(&input.paper_id).map_err(|e| e.to_string())?;
 
     let (source, text) = if let Some(html) = fetch_html(&paper_id).await? {
@@ -242,30 +260,77 @@ async fn dispatch(rpc: RpcRequest) -> RpcResponse {
                 "tools": [
                     {
                         "name": "search_papers",
-                        "description": "Search arXiv papers",
+                        "description": "Search arXiv papers. Provides rich metadata and links to full text.",
                         "inputSchema": {
                             "type": "object",
                             "properties": {
-                                "q": { "type": "string" },
-                                "n": { "type": "integer", "default": 10 },
-                                "from": { "type": "string", "description": "YYYY-MM-DD" },
-                                "to": { "type": "string", "description": "YYYY-MM-DD" },
-                                "cats": { "type": "array", "items": { "type": "string" } },
-                                "sort": { "type": "string", "enum": ["relevance", "date"], "default": "relevance" }
+                                "q": { 
+                                    "type": "string",
+                                    "title": "Search Query",
+                                    "description": "The search query string. Supports arXiv-specific field tags like 'ti:' (title), 'au:' (author), and 'abs:' (abstract), along with boolean operators ('AND', 'OR', 'ANDNOT'). Example: 'ti:\"large language models\" AND au:kaplan'"
+                                },
+                                "n": { 
+                                    "type": "integer", 
+                                    "title": "Max Results",
+                                    "description": "Maximum number of results to return (default: 10).",
+                                    "default": 10 
+                                },
+                                "from": { 
+                                    "type": "string", 
+                                    "title": "Start Date",
+                                    "description": "Filter results by start date (YYYY-MM-DD)." 
+                                },
+                                "to": { 
+                                    "type": "string", 
+                                    "title": "End Date",
+                                    "description": "Filter results by end date (YYYY-MM-DD)." 
+                                },
+                                "cats": { 
+                                    "type": "array", 
+                                    "title": "Categories",
+                                    "description": "arXiv categories to search in (e.g., ['cs.AI', 'cs.LG']).",
+                                    "items": { "type": "string" } 
+                                },
+                                "sort": { 
+                                    "type": "string", 
+                                    "title": "Sort Strategy",
+                                    "description": "The strategy used to sort results. Must be one of: 'relevance' or 'date'.",
+                                    "enum": ["relevance", "date"], 
+                                    "default": "relevance" 
+                                }
                             },
                             "required": ["q"]
                         }
                     },
                     {
                         "name": "retrieve_paper",
-                        "description": "Retrieve, prune, and chunk a paper into LLM-ready content",
+                        "description": "Retrieve, prune, and chunk a paper into LLM-ready content. Attempts to fetch full text via HTML conversion, falling back to the abstract.",
                         "inputSchema": {
                             "type": "object",
                             "properties": {
-                                "paper_id": { "type": "string" },
-                                "prune_references": { "type": "boolean", "default": true },
-                                "chunk_chars": { "type": "integer", "default": 4000 },
-                                "chunk_overlap": { "type": "integer", "default": 200 }
+                                "paper_id": { 
+                                    "type": "string",
+                                    "title": "Paper ID",
+                                    "description": "The arXiv paper ID (e.g., '2303.08774' or 'quant-ph/0201082')."
+                                },
+                                "prune_references": { 
+                                    "type": "boolean", 
+                                    "title": "Prune References",
+                                    "description": "Whether to remove the references section to save tokens (default: true).",
+                                    "default": true 
+                                },
+                                "chunk_chars": { 
+                                    "type": "integer", 
+                                    "title": "Chunk Size",
+                                    "description": "Target size of text chunks for processing (default: 4000 characters).",
+                                    "default": 4000 
+                                },
+                                "chunk_overlap": { 
+                                    "type": "integer", 
+                                    "title": "Chunk Overlap",
+                                    "description": "Number of characters to overlap between chunks (default: 200 characters).",
+                                    "default": 200 
+                                }
                             },
                             "required": ["paper_id"]
                         }

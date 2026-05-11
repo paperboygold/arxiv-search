@@ -49,12 +49,12 @@ Queries `https://export.arxiv.org/api/query`, parses Atom XML, returns an array 
 
 | param | type | required | notes |
 |---|---|---|---|
-| `query` | string | yes | supports arXiv field syntax: `ti:`, `au:`, `abs:`, boolean AND/OR/ANDNOT |
-| `max_results` | u32 | no | default 10, capped at 50 |
-| `date_from` | string | no | YYYY-MM-DD; injected as `submittedDate:[YYYYMMDD0000 TO ...]` |
-| `date_to` | string | no | YYYY-MM-DD |
-| `categories` | `Vec<String>` | no | e.g. `["cs.AI", "cs.LG"]`, ANDed into query |
-| `sort_by` | string | no | `"relevance"` (default) \| `"date"` |
+| `q` | string | yes | supports arXiv field syntax: `ti:`, `au:`, `abs:`, boolean AND/OR/ANDNOT |
+| `n` | u32 | no | default 10, capped at 50 |
+| `from` | string | no | YYYY-MM-DD; injected as `submittedDate:[YYYYMMDD0000 TO ...]` |
+| `to` | string | no | YYYY-MM-DD |
+| `cats` | `Vec<String>` | no | e.g. `["cs.AI", "cs.LG"]`, ANDed into query |
+| `sort` | string | no | `"relevance"` (default) \| `"date"` |
 
 **Returns:** `Vec<Paper>` serialised as JSON.
 
