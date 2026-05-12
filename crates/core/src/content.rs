@@ -44,6 +44,23 @@ pub struct HierarchicalPaperChunk {
     pub segments: Vec<PaperChunk>,
     /// Mean-pooled embedding of the segments in this cluster.
     pub cluster_embedding: Vec<f32>,
+    pub cluster_id: Option<String>,
+    pub parent_id: Option<String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+pub struct TopicChunk {
+    pub id: String,
+    pub text: String,
+    pub citations: Vec<String>,
+    pub source_chunks: Vec<CrossDocumentPaperChunk>,
+    pub cluster_embedding: Vec<f32>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+pub struct CrossDocumentPaperChunk {
+    pub paper_id: String,
+    pub chunk: PaperChunk,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
@@ -114,6 +131,8 @@ pub fn hierarchical_chunk_text(
                     start_char: 0, // Simplified, actual offset calculation would be better
                     end_char: segment.text.len(),
                     text: segment.text.clone(),
+                    cluster_id: Some(format!("cluster_{cluster_idx}")),
+                    parent_id: None,
                 });
                 embeddings.push(segment.embedding.clone());
             }
@@ -137,14 +156,16 @@ pub fn hierarchical_chunk_text(
                 mean
             };
 
-            HierarchicalPaperChunk {
-                index: cluster_idx,
-                start_char: 0, // Placeholder
-                end_char: 0,   // Placeholder
-                text: cluster_text,
-                segments: cluster_segments,
-                cluster_embedding,
-            }
+                HierarchicalPaperChunk {
+                    index: cluster_idx,
+                    start_char: 0, // Placeholder
+                    end_char: 0,   // Placeholder
+                    text: cluster_text,
+                    segments: cluster_segments,
+                    cluster_embedding,
+                    cluster_id: Some(format!("hierarchical_{cluster_idx}")),
+                    parent_id: None,
+                }
         })
         .collect()
 }

@@ -45,7 +45,7 @@ impl HierarchicalSegmenter {
         }
 
         // 1. Graph Construction
-        let (mu, sigma) = compute_stats(segments);
+        let (mu, sigma) = self.compute_stats(segments);
         let tau = self.options.k.mul_add(sigma, mu);
         let n = segments.len();
         let mut adj = vec![vec![false; n]; n];
@@ -141,24 +141,85 @@ impl HierarchicalSegmenter {
         clusters
     }
 
+    #[must_use]
+    pub fn compute_stats(&self, segments: &[Segment]) -> (f32, f32) {
+        let mut similarities = Vec::new();
+        for i in 0..segments.len() {
+            for j in i + 1..segments.len() {
+                similarities.push(cosine_similarity(&segments[i].embedding, &segments[j].embedding));
+            }
+        }
+        if similarities.is_empty() {
+            return (0.0, 0.0);
+        }
+        #[expect(clippy::cast_precision_loss)]
+        let count = similarities.len() as f32;
+        let mu = similarities.iter().sum::<f32>() / count;
+        let variance = similarities.iter().map(|&s| (s - mu).powi(2)).sum::<f32>() / count;
+        (mu, variance.sqrt())
+    }
 }
 
-fn compute_stats(segments: &[Segment]) -> (f32, f32) {
-    let mut similarities = Vec::new();
-    for i in 0..segments.len() {
-        for j in i + 1..segments.len() {
-            similarities.push(cosine_similarity(&segments[i].embedding, &segments[j].embedding));
-        }
-    }
-    if similarities.is_empty() {
-        return (0.0, 0.0);
-    }
-    #[expect(clippy::cast_precision_loss)]
-    let count = similarities.len() as f32;
-    let mu = similarities.iter().sum::<f32>() / count;
-    let variance = similarities.iter().map(|&s| (s - mu).powi(2)).sum::<f32>() / count;
-    (mu, variance.sqrt())
+/// Performs Cross-Document Topic-Aligned (CDTA) synthesis.
+pub struct TopicSynthesizer {
+    theta: f32,
 }
+
+impl TopicSynthesizer {
+    #[must_use]
+    pub const fn new(theta: f32) -> Self {
+        Self { theta }
+    }
+
+    /// Synthesizes topic clusters from a corpus of segments.
+    /// Uses transitive closure (connected components) on the similarity graph.
+    #[must_use]
+    pub fn synthesize(&self, segments: &[Segment]) -> Vec<Vec<usize>> {
+        // Helper to find the root of a set with path compression
+        fn find(parent: &mut Vec<usize>, i: usize) -> usize {
+            if parent[i] == i {
+                i
+            } else {
+                parent[i] = find(parent, parent[i]);
+                parent[i]
+            }
+        }
+
+        // Helper to union two sets
+        fn union(parent: &mut Vec<usize>, i: usize, j: usize) {
+            let root_i = find(parent, i);
+            let root_j = find(parent, j);
+            if root_i != root_j {
+                parent[root_i] = root_j;
+            }
+        }
+
+        if segments.is_empty() {
+            return Vec::new();
+        }
+
+        let n = segments.len();
+        let mut parent: Vec<usize> = (0..n).collect();
+
+        for i in 0..n {
+            for j in i + 1..n {
+                if cosine_similarity(&segments[i].embedding, &segments[j].embedding) > self.theta {
+                    union(&mut parent, i, j);
+                }
+            }
+        }
+
+        let mut clusters_map: std::collections::HashMap<usize, Vec<usize>> =
+            std::collections::HashMap::new();
+        for i in 0..n {
+            let root = find(&mut parent, i);
+            clusters_map.entry(root).or_default().push(i);
+        }
+
+        clusters_map.into_values().collect()
+    }
+}
+
 
 /// Cosine similarity between two vectors.
 #[must_use]
@@ -236,13 +297,13 @@ mod tests {
         let s23 = 0.96f32;
         
         let expected_mu = (s12 + s13 + s23) / 3.0;
-        let expected_sigma = (((s12 - expected_mu).powi(2) + (s13 - expected_mu).powi(2) + (s23 - expected_mu).powi(2)) / 3.0).sqrt();
+        let expected_sigma = ((s23 - expected_mu).mul_add(s23 - expected_mu, (s12 - expected_mu).mul_add(s12 - expected_mu, (s13 - expected_mu).powi(2))) / 3.0).sqrt();
         
         let segmenter = HierarchicalSegmenter::new(ClusteringOptions { k: 1.2 });
         let (mu, sigma) = segmenter.compute_stats(&segments);
         
-        assert!((mu - expected_mu).abs() < 1e-6, "Mean mismatch: {} != {}", mu, expected_mu);
-        assert!((sigma - expected_sigma).abs() < 1e-6, "StdDev mismatch: {} != {}", sigma, expected_sigma);
+        assert!((mu - expected_mu).abs() < 1e-6, "Mean mismatch: {mu} != {expected_mu}");
+        assert!((sigma - expected_sigma).abs() < 1e-6, "StdDev mismatch: {sigma} != {expected_sigma}");
     }
 
     #[test]
@@ -273,7 +334,72 @@ mod tests {
         ];
         
         for eq in expected_cliques {
-            assert!(cliques.iter().any(|q| eq.iter().all(|v| q.contains(v))), "Missing clique {:?}", eq);
+            assert!(cliques.iter().any(|q| eq.iter().all(|v| q.contains(v))), "Missing clique {eq:?}");
         }
+    }
+
+    #[test]
+    fn test_cdta_transitive_closure() {
+        // c1 sim c2 > theta, c2 sim c3 > theta, but c1 sim c3 < theta
+        // theta = 0.7
+        let segments = vec![
+            Segment { text: "c1".into(), embedding: vec![1.0, 0.0] },
+            Segment { text: "c2".into(), embedding: vec![0.8, 0.6] },   // sim(c1,c2) = 0.8
+            Segment { text: "c3".into(), embedding: vec![0.3, 0.95] },  // sim(c2,c3) = 0.24 + 0.57 = 0.81
+                                                                       // sim(c1,c3) = 0.3
+        ];
+        
+        let synthesizer = TopicSynthesizer::new(0.7);
+        let clusters = synthesizer.synthesize(&segments);
+        
+        assert_eq!(clusters.len(), 1, "Should have 1 cluster due to transitive closure");
+        let cluster = &clusters[0];
+        assert!(cluster.contains(&0));
+        assert!(cluster.contains(&1));
+        assert!(cluster.contains(&2));
+    }
+
+    #[test]
+    fn test_provenance_retention() {
+        let segments = vec![
+            Segment { text: "p1_c1".into(), embedding: vec![1.0, 0.0] },
+            Segment { text: "p2_c1".into(), embedding: vec![0.99, 0.01] },
+        ];
+        let paper_ids = ["paper_1".to_string(), "paper_2".to_string()];
+        
+        let synthesizer = TopicSynthesizer::new(0.9);
+        let clusters = synthesizer.synthesize(&segments);
+        
+        // Build TopicChunks from clusters
+        let topic_chunks: Vec<crate::content::TopicChunk> = clusters.into_iter().enumerate().map(|(i, cluster)| {
+            let mut citations: Vec<String> = cluster.iter().map(|&idx| paper_ids[idx].clone()).collect();
+            citations.sort();
+            citations.dedup();
+            
+            crate::content::TopicChunk {
+                id: format!("topic_{i}"),
+                text: cluster.iter().map(|&idx| segments[idx].text.clone()).collect::<Vec<_>>().join("\n"),
+                citations,
+                source_chunks: cluster.iter().map(|&idx| {
+                    crate::content::CrossDocumentPaperChunk {
+                        paper_id: paper_ids[idx].clone(),
+                        chunk: crate::content::PaperChunk {
+                            index: idx,
+                            start_char: 0,
+                            end_char: segments[idx].text.len(),
+                            text: segments[idx].text.clone(),
+                            cluster_id: None,
+                            parent_id: None,
+                        }
+                    }
+                }).collect(),
+                cluster_embedding: vec![],
+            }
+        }).collect();
+        
+        assert_eq!(topic_chunks.len(), 1);
+        assert_eq!(topic_chunks[0].citations, vec!["paper_1", "paper_2"]);
+        assert_eq!(topic_chunks[0].source_chunks[0].paper_id, "paper_1");
+        assert_eq!(topic_chunks[0].source_chunks[1].paper_id, "paper_2");
     }
 }
