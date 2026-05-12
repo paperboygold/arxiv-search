@@ -14,7 +14,7 @@ use serde_json::Value;
 
 use arxiv_search_rs_mcp_core::{
     arxiv::{build_query_params, normalize_paper_id, parse_response},
-    content::{prepare_paper, PreparationOptions},
+    content::{prepare_paper, PreparationOptions, PreparedPaper},
     html::to_markdown,
     pdf::extract_text,
     semantic_scholar::{parse_citations, parse_recommendations},
@@ -218,7 +218,26 @@ impl ArxivServer {
     pub const fn new(client: FetchClient) -> Self {
         Self { client }
     }
+}
 
+fn format_hierarchical_chunks(prepared: &mut PreparedPaper) {
+    for chunk in &mut prepared.chunks {
+        let mut context = Vec::new();
+        if let Some(parent) = &chunk.parent_id {
+            context.push(parent.as_str());
+        }
+        if let Some(cluster) = &chunk.cluster_id {
+            context.push(cluster.as_str());
+        }
+
+        if !context.is_empty() {
+            let header = context.join(" -> ");
+            chunk.text = format!("Context: {header}\n\n{}", chunk.text);
+        }
+    }
+}
+
+impl ArxivServer {
     #[expect(clippy::too_many_lines)]
     async fn run_operation(&self, op: Operation) -> Result<Value, rmcp::Error> {
         let id = normalize_paper_id(&op.id)
@@ -317,7 +336,7 @@ impl ArxivServer {
                     journal_ref: None,
                 };
 
-                let prepared = prepare_paper(
+                let mut prepared = prepare_paper(
                     paper,
                     source,
                     text,
@@ -328,7 +347,8 @@ impl ArxivServer {
                         segmentation_k: op.segmentation_k,
                     },
                 );
-
+                format_hierarchical_chunks(&mut prepared);
+ 
                 serde_json::to_value(prepared)
                     .map_err(|e| rmcp::Error::internal_error(e.to_string(), None))
             }
@@ -375,7 +395,7 @@ impl ArxivServer {
             journal_ref: None,
         };
 
-        let prepared = prepare_paper(
+        let mut prepared = prepare_paper(
             paper,
             source_and_text.0,
             source_and_text.1,
@@ -386,7 +406,8 @@ impl ArxivServer {
                 segmentation_k: input.segmentation_k,
             },
         );
-
+        format_hierarchical_chunks(&mut prepared);
+ 
         serde_json::to_value(prepared).map_err(|e| rmcp::Error::internal_error(e.to_string(), None))
     }
 }
@@ -558,5 +579,90 @@ impl ServerHandler for ArxivServer {
             ))
         };
         std::future::ready(result)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use arxiv_search_rs_mcp_core::content::PaperChunk;
+
+    #[test]
+    fn test_hierarchical_formatting() {
+        let mut prepared = PreparedPaper {
+            paper: Paper {
+                id: "test".into(),
+                title: "test".into(),
+                authors: vec![],
+                abstract_text: "".into(),
+                categories: vec![],
+                published: "".into(),
+                url: "".into(),
+                doi: None,
+                journal_ref: None,
+            },
+            source: "test".into(),
+            raw_markdown: "".into(),
+            pruned_markdown: "".into(),
+            chunks: vec![
+                PaperChunk {
+                    index: 0,
+                    start_char: 0,
+                    end_char: 4,
+                    text: "body".into(),
+                    cluster_id: Some("Cluster A".into()),
+                    parent_id: Some("Header 1".into()),
+                },
+                PaperChunk {
+                    index: 1,
+                    start_char: 5,
+                    end_char: 9,
+                    text: "body2".into(),
+                    cluster_id: None,
+                    parent_id: Some("Header 2".into()),
+                },
+                PaperChunk {
+                    index: 2,
+                    start_char: 10,
+                    end_char: 14,
+                    text: "body3".into(),
+                    cluster_id: None,
+                    parent_id: None,
+                },
+            ],
+        };
+
+        format_hierarchical_chunks(&mut prepared);
+
+        assert_eq!(prepared.chunks[0].text, "Context: Header 1 -> Cluster A\n\nbody");
+        assert_eq!(prepared.chunks[1].text, "Context: Header 2\n\nbody2");
+        assert_eq!(prepared.chunks[2].text, "body3");
+    }
+
+    #[test]
+    fn test_serialization_includes_metadata() {
+        let chunk = PaperChunk {
+            index: 0,
+            start_char: 0,
+            end_char: 4,
+            text: "body".into(),
+            cluster_id: Some("Cluster A".into()),
+            parent_id: Some("Header 1".into()),
+        };
+        let json = serde_json::to_value(&chunk).expect("should serialize");
+        assert_eq!(json["cluster_id"], "Cluster A");
+        assert_eq!(json["parent_id"], "Header 1");
+
+        let flat_chunk = PaperChunk {
+            index: 1,
+            start_char: 5,
+            end_char: 9,
+            text: "body2".into(),
+            cluster_id: None,
+            parent_id: None,
+        };
+        let json_flat = serde_json::to_value(&flat_chunk).expect("should serialize flat");
+        assert!(json_flat["cluster_id"].is_null());
+        assert!(json_flat["parent_id"].is_null());
     }
 }
