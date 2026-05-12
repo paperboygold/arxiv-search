@@ -5,7 +5,7 @@ use crate::paper::Paper;
 const DEFAULT_CHUNK_CHARS: usize = 4_000;
 const DEFAULT_CHUNK_OVERLAP: usize = 200;
 
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+#[derive(Debug, Copy, Clone, Serialize, Deserialize, PartialEq)]
 pub struct PreparationOptions {
     pub prune_references: bool,
     pub chunk_chars: usize,

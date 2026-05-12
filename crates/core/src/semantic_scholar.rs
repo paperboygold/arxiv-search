@@ -50,10 +50,14 @@ fn ss_paper_to_paper(p: SsPaper) -> Paper {
     Paper {
         id,
         title: p.title,
-        authors: p.authors.into_iter().map(|a| crate::paper::Author {
-            name: a.name,
-            affiliations: Vec::new(),
-        }).collect(),
+        authors: p
+            .authors
+            .into_iter()
+            .map(|a| crate::paper::Author {
+                name: a.name,
+                affiliations: Vec::new(),
+            })
+            .collect(),
         abstract_text: String::new(),
         categories: Vec::new(),
         published: p.year.map(|y| y.to_string()).unwrap_or_default(),

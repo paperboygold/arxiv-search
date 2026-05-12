@@ -48,7 +48,9 @@ async fn main() -> Result<()> {
 
     let cli = Cli::parse();
     let ss_api_key = std::env::var("SEMANTIC_SCHOLAR_API_KEY").ok();
-    let client = FetchClient::new(ss_api_key).await.context("failed to build HTTP client")?;
+    let client = FetchClient::new(ss_api_key)
+        .await
+        .context("failed to build HTTP client")?;
     let server = ArxivServer::new(client);
 
     if cli.stdio {

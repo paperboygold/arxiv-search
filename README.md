@@ -8,6 +8,13 @@ Rust MCP server for arXiv search and paper retrieval. The repo now follows the s
 
 The main retrieval flow is designed for LLM ingestion: retrieve paper content directly from arXiv, prune noise, then chunk before handing it downstream.
 
+## Features
+
+- **Strict Rate-Limiting:** Adheres to arXiv's ToS via cross-platform trait bounds and stateful `tokio`/`worker` mutexes, ensuring no more than one request per 3 seconds.
+- **Robust OpenSearch Pagination:** Extracts full OpenSearch metadata (`totalResults`, `startIndex`) and supports paginated queries via the `offset` parameter.
+- **Extended Metadata Extraction:** Intelligently captures rich semantic data including `doi`, `journal_ref`, and nested institutional `affiliations` for each author.
+- **Native OS Caching:** Employs an asynchronous persistence layer (`~/.cache/arxiv-search-mcp`) on `native` targets to cache fetched HTML/PDFs and bypass HTTP overhead entirely on subsequent requests.
+
 ## Tools
 
 ### `search`
@@ -21,6 +28,7 @@ Search arXiv papers from the API. Pass a JSON object:
 |---|---|---:|---|
 | `q` | string | required | arXiv query syntax with field filters and boolean operators |
 | `n` | integer | `10` | Max results, capped at 50 |
+| `offset` | integer | `0` | OpenSearch pagination offset for fetching subsequent pages |
 | `from` | date | - | Start date `YYYY-MM-DD` |
 | `to` | date | - | End date `YYYY-MM-DD` |
 | `cats` | string[] | - | Category filter, for example `["cs.AI","cs.LG"]` |

@@ -1,6 +1,6 @@
+use anyhow::{Context, Result};
 use directories::ProjectDirs;
 use std::path::PathBuf;
-use anyhow::{Result, Context};
 use tokio::fs;
 
 #[derive(Debug, Clone)]
@@ -19,10 +19,11 @@ impl ArxivCache {
         };
 
         if !cache_dir.exists() {
-            fs::create_dir_all(&cache_dir).await
-                .with_context(|| format!("Failed to create cache directory at {:?}", cache_dir))?;
+            fs::create_dir_all(&cache_dir)
+                .await
+                .with_context(|| format!("Failed to create cache directory at {}", cache_dir.display()))?;
         }
-        
+
         Ok(Self { cache_dir })
     }
 
@@ -58,6 +59,7 @@ impl ArxivCache {
 }
 
 #[cfg(test)]
+#[expect(clippy::panic_in_result_fn)]
 mod tests {
     use super::*;
     use tempfile::tempdir;
@@ -67,22 +69,24 @@ mod tests {
         let temp = tempdir()?;
         let cache_dir = temp.path().join(".arxiv_cache");
         fs::create_dir_all(&cache_dir).await?;
-        
-        let cache = ArxivCache { cache_dir: cache_dir.clone() };
-        
+
+        let cache = ArxivCache {
+            cache_dir: cache_dir.clone(),
+        };
+
         let paper_id = "1234.5678";
         let html_content = "<html><body>Test</body></html>";
-        
+
         // Initial state: cache miss
         assert!(cache.get_html(paper_id).await?.is_none());
-        
+
         // Set cache
         cache.set_html(paper_id, html_content).await?;
-        
+
         // Cache hit
         let retrieved = cache.get_html(paper_id).await?;
         assert_eq!(retrieved, Some(html_content.to_string()));
-        
+
         Ok(())
     }
 
@@ -91,22 +95,24 @@ mod tests {
         let temp = tempdir()?;
         let cache_dir = temp.path().join(".arxiv_cache");
         fs::create_dir_all(&cache_dir).await?;
-        
-        let cache = ArxivCache { cache_dir: cache_dir.clone() };
-        
+
+        let cache = ArxivCache {
+            cache_dir: cache_dir.clone(),
+        };
+
         let paper_id = "1234.5678";
         let pdf_content = vec![0xDE, 0xAD, 0xBE, 0xEF];
-        
+
         // Initial state: cache miss
         assert!(cache.get_pdf(paper_id).await?.is_none());
-        
+
         // Set cache
         cache.set_pdf(paper_id, &pdf_content).await?;
-        
+
         // Cache hit
         let retrieved = cache.get_pdf(paper_id).await?;
         assert_eq!(retrieved, Some(pdf_content));
-        
+
         Ok(())
     }
 }

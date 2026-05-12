@@ -54,9 +54,10 @@ fn sanitize_lucene_query(q: &str) -> String {
         // Lucene special chars that need escaping.
         // We intentionally do NOT escape `"` or `:` so that arXiv field syntax
         // (ti:, au:, abs:) and quoted phrases still work.
-        if matches!(ch, '+' | '!' | '(' | ')' | '{' | '}' | '[' | ']'
-                      | '^' | '~' | '*' | '?' | '\\' | '/')
-        {
+        if matches!(
+            ch,
+            '+' | '!' | '(' | ')' | '{' | '}' | '[' | ']' | '^' | '~' | '*' | '?' | '\\' | '/'
+        ) {
             out.push('\\');
         }
         out.push(ch);
@@ -409,13 +410,15 @@ mod tests {
 
     #[test]
     fn max_results_capped_at_50() {
-        let p = build_query_params("test", 200, 0, None, None, &[], "relevance").expect("valid query");
+        let p =
+            build_query_params("test", 200, 0, None, None, &[], "relevance").expect("valid query");
         assert_eq!(p.max_results, 50);
     }
 
     #[test]
     fn max_results_minimum_one() {
-        let p = build_query_params("test", 0, 0, None, None, &[], "relevance").expect("valid query");
+        let p =
+            build_query_params("test", 0, 0, None, None, &[], "relevance").expect("valid query");
         assert_eq!(p.max_results, 1);
     }
 
@@ -531,7 +534,10 @@ mod tests {
         let p = &response.papers[0];
         assert_eq!(p.authors.len(), 2);
         assert_eq!(p.authors[0].name, "Alice Smith");
-        assert_eq!(p.authors[0].affiliations, vec!["University of A", "Institute of B"]);
+        assert_eq!(
+            p.authors[0].affiliations,
+            vec!["University of A", "Institute of B"]
+        );
         assert_eq!(p.authors[1].name, "Bob Jones");
         assert!(p.authors[1].affiliations.is_empty());
     }

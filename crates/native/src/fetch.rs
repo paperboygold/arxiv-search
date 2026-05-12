@@ -31,7 +31,7 @@ impl std::fmt::Debug for FetchClient {
         f.debug_struct("FetchClient")
             .field("client", &self.client)
             .field("ss_api_key", &self.ss_api_key)
-            .finish()
+            .finish_non_exhaustive()
     }
 }
 
@@ -40,6 +40,7 @@ impl FetchClient {
     ///
     /// Returns an error if the HTTP client fails to build.
     pub async fn new(ss_api_key: Option<String>) -> Result<Self> {
+        #[expect(clippy::duration_suboptimal_units)]
         let client = Client::builder()
             .user_agent(concat!(
                 "arxiv-search-rs-mcp/",
@@ -81,7 +82,11 @@ impl FetchClient {
             let status = response.status().as_u16();
             if status == 429 || status == 503 {
                 let delay = RETRY_BASE_MS * 2u64.pow(attempt);
-                tracing::warn!("arXiv returned {status}, retrying in {delay}ms (attempt {}/{})", attempt + 1, MAX_RETRIES);
+                tracing::warn!(
+                    "arXiv returned {status}, retrying in {delay}ms (attempt {}/{})",
+                    attempt + 1,
+                    MAX_RETRIES
+                );
                 tokio::time::sleep(Duration::from_millis(delay)).await;
                 continue;
             }
