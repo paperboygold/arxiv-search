@@ -1,3 +1,4 @@
+use directories::ProjectDirs;
 use std::path::PathBuf;
 use anyhow::{Result, Context};
 use tokio::fs;
@@ -9,18 +10,17 @@ pub struct ArxivCache {
 
 impl ArxivCache {
     pub async fn new() -> Result<Self> {
-        // Try current directory first (workspace)
-        let mut cache_dir = std::env::current_dir()?;
-        cache_dir.push(".arxiv_cache");
-        
+        // Use standard OS cache directory to avoid littering the workspace
+        let cache_dir = if let Some(proj_dirs) = ProjectDirs::from("org", "arxiv-search", "mcp") {
+            proj_dirs.cache_dir().to_path_buf()
+        } else {
+            // Fallback to temp dir if standard paths are unavailable
+            std::env::temp_dir().join("arxiv-search-mcp")
+        };
+
         if !cache_dir.exists() {
-            // Try to create it. If it fails, fallback to temp dir.
-            if let Err(e) = fs::create_dir_all(&cache_dir).await {
-                tracing::warn!("Failed to create cache dir in current workspace: {e}. Falling back to temp dir.");
-                cache_dir = std::env::temp_dir();
-                cache_dir.push(".arxiv_cache");
-                fs::create_dir_all(&cache_dir).await.context("Failed to create temp cache dir")?;
-            }
+            fs::create_dir_all(&cache_dir).await
+                .with_context(|| format!("Failed to create cache directory at {:?}", cache_dir))?;
         }
         
         Ok(Self { cache_dir })
