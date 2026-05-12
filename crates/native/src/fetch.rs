@@ -242,22 +242,27 @@ mod tests {
         html::to_markdown,
         semantic_scholar::{parse_citations, parse_recommendations},
     };
+    use tokio::sync::OnceCell;
 
     const ATTENTION_PAPER_ID: &str = "1706.03762";
 
-    async fn make_client() -> FetchClient {
-        // Since each test gets a new client and its own rate limiter,
-        // we manually sleep here to prevent tests from spamming the API too fast.
-        tokio::time::sleep(Duration::from_secs(4)).await;
-        FetchClient::new(std::env::var("SEMANTIC_SCHOLAR_API_KEY").ok())
+    static GLOBAL_CLIENT: OnceCell<FetchClient> = OnceCell::const_new();
+
+    async fn get_client() -> FetchClient {
+        GLOBAL_CLIENT
+            .get_or_init(|| async {
+                FetchClient::new(std::env::var("SEMANTIC_SCHOLAR_API_KEY").ok())
+                    .await
+                    .expect("failed to build test client")
+            })
             .await
-            .expect("failed to build test client")
+            .clone()
     }
 
     #[tokio::test]
     #[ignore = "requires network"]
     async fn search_returns_results() {
-        let client = make_client().await;
+        let client = get_client().await;
         let params = build_query_params(
             "attention mechanism transformer",
             5,
@@ -281,7 +286,7 @@ mod tests {
     #[tokio::test]
     #[ignore = "requires network"]
     async fn get_abstract_known_paper() {
-        let client = make_client().await;
+        let client = get_client().await;
         let id = normalize_paper_id(ATTENTION_PAPER_ID).expect("normalize failed");
         let xml = client.fetch_arxiv_by_id(&id).await.expect("fetch failed");
         let response = parse_response(&xml).expect("parse failed");
@@ -297,7 +302,7 @@ mod tests {
     #[tokio::test]
     #[ignore = "requires network"]
     async fn download_paper_html_path() {
-        let client = make_client().await;
+        let client = get_client().await;
         let html = client.fetch_html("2303.08774").await.expect("fetch failed");
         assert!(
             html.is_some(),
@@ -310,24 +315,22 @@ mod tests {
     #[tokio::test]
     #[ignore = "requires network"]
     async fn citations_returns_results() {
-        let client = make_client().await;
+        let client = get_client().await;
         let json = client
             .fetch_citations(ATTENTION_PAPER_ID, 5)
             .await
             .expect("fetch failed");
         let _papers = parse_citations(&json).expect("parse failed");
-        // We just ensure it parses. Semantic Scholar may rate limit or return empty without API key.
     }
 
     #[tokio::test]
     #[ignore = "requires network"]
     async fn recommendations_returns_results() {
-        let client = make_client().await;
+        let client = get_client().await;
         let json = client
             .fetch_recommendations(ATTENTION_PAPER_ID, 5)
             .await
             .expect("fetch failed");
         let _papers = parse_recommendations(&json).expect("parse failed");
-        // We just ensure it parses.
     }
 }
