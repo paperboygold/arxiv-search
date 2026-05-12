@@ -1,11 +1,12 @@
 use std::sync::Arc;
-use std::time::{Duration, Instant};
+use std::time::Duration;
 
 use anyhow::{Context as _, Result};
 use reqwest::Client;
-use tokio::sync::Mutex;
 
+use crate::rate_limit::TokioRateLimiter;
 use arxiv_search_rs_mcp_core::arxiv::QueryParams;
+use arxiv_search_rs_mcp_core::RateLimiter;
 
 const ARXIV_API_BASE: &str = "https://export.arxiv.org/api/query";
 const ARXIV_HTML_BASE: &str = "https://arxiv.org/html";
@@ -16,11 +17,20 @@ const ARXIV_RATE_LIMIT: Duration = Duration::from_secs(3);
 const MAX_RETRIES: u32 = 3;
 const RETRY_BASE_MS: u64 = 3_000;
 
-#[derive(Debug, Clone)]
+#[derive(Clone)]
 pub struct FetchClient {
     client: Client,
-    last_arxiv_request: Arc<Mutex<Option<Instant>>>,
+    rate_limiter: Arc<dyn RateLimiter>,
     ss_api_key: Option<String>,
+}
+
+impl std::fmt::Debug for FetchClient {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("FetchClient")
+            .field("client", &self.client)
+            .field("ss_api_key", &self.ss_api_key)
+            .finish()
+    }
 }
 
 impl FetchClient {
@@ -39,21 +49,9 @@ impl FetchClient {
             .context("failed to build HTTP client")?;
         Ok(Self {
             client,
-            last_arxiv_request: Arc::new(Mutex::new(None)),
+            rate_limiter: Arc::new(TokioRateLimiter::new(ARXIV_RATE_LIMIT)),
             ss_api_key,
         })
-    }
-
-    async fn arxiv_rate_limit(&self) {
-        let sleep_duration = {
-            let mut last = self.last_arxiv_request.lock().await;
-            let elapsed = last.map(|t| t.elapsed());
-            *last = Some(Instant::now());
-            elapsed.and_then(|e| ARXIV_RATE_LIMIT.checked_sub(e))
-        };
-        if let Some(d) = sleep_duration {
-            tokio::time::sleep(d).await;
-        }
     }
 
     /// # Errors
@@ -62,7 +60,7 @@ impl FetchClient {
     /// response body cannot be read. Retries transient 429/503 errors with exponential backoff.
     pub async fn fetch_arxiv_query(&self, params: &QueryParams) -> Result<String> {
         for attempt in 0..MAX_RETRIES {
-            self.arxiv_rate_limit().await;
+            self.rate_limiter.wait().await;
             let response = self
                 .client
                 .get(ARXIV_API_BASE)
@@ -99,7 +97,7 @@ impl FetchClient {
     /// response body cannot be read. Retries transient 429/503 errors with exponential backoff.
     pub async fn fetch_arxiv_by_id(&self, paper_id: &str) -> Result<String> {
         for attempt in 0..MAX_RETRIES {
-            self.arxiv_rate_limit().await;
+            self.rate_limiter.wait().await;
             let response = self
                 .client
                 .get(ARXIV_API_BASE)
@@ -129,6 +127,7 @@ impl FetchClient {
     /// Returns an error if the HTTP request fails or the server returns a non-404 error status.
     /// Returns `Ok(None)` if the HTML version does not exist (404).
     pub async fn fetch_html(&self, paper_id: &str) -> Result<Option<String>> {
+        self.rate_limiter.wait().await;
         let url = format!("{ARXIV_HTML_BASE}/{paper_id}");
         let response = self
             .client
@@ -153,6 +152,7 @@ impl FetchClient {
     /// Returns an error if the HTTP request fails, the server returns an error status, or the
     /// response body cannot be read.
     pub async fn fetch_pdf(&self, paper_id: &str) -> Result<Vec<u8>> {
+        self.rate_limiter.wait().await;
         let url = format!("{ARXIV_PDF_BASE}/{paper_id}");
         let bytes = self
             .client

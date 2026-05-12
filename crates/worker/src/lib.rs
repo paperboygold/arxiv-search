@@ -1,15 +1,52 @@
 use serde::{Deserialize, Serialize};
 use worker::*;
 
+use async_trait::async_trait;
 use arxiv_search_rs_mcp_core::{
     arxiv::{build_query_params, normalize_paper_id, parse_response},
     content::{prepare_paper, PreparationOptions},
     html::to_markdown,
-    Paper,
+    Paper, RateLimiter,
 };
 
 const ARXIV_API_BASE: &str = "https://export.arxiv.org/api/query";
 const ARXIV_HTML_BASE: &str = "https://arxiv.org/html";
+
+use std::sync::Mutex;
+use std::time::Duration;
+
+struct WorkerRateLimiter {
+    last_request: Mutex<Option<u64>>,
+}
+
+#[async_trait(?Send)]
+impl RateLimiter for WorkerRateLimiter {
+    async fn wait(&self) {
+        let now = worker::Date::now().as_millis();
+        let sleep_duration = {
+            let mut last = self.last_request.lock().unwrap();
+            let mut to_sleep = 0;
+            if let Some(last_time) = *last {
+                let elapsed = now.saturating_sub(last_time);
+                if elapsed < 3000 {
+                    to_sleep = 3000 - elapsed;
+                }
+            }
+            *last = Some(now + to_sleep);
+            to_sleep
+        };
+
+        if sleep_duration > 0 {
+            let _ = worker::Delay::from(Duration::from_millis(sleep_duration)).await;
+        }
+    }
+}
+
+lazy_static::lazy_static! {
+    static ref RATE_LIMITER: WorkerRateLimiter = WorkerRateLimiter {
+        last_request: Mutex::new(None),
+    };
+}
 
 #[derive(Deserialize)]
 struct RpcRequest {
@@ -164,6 +201,7 @@ async fn fetch_text(url: &str) -> std::result::Result<String, String> {
 async fn fetch_arxiv_query(
     params: &arxiv_search_rs_mcp_core::arxiv::QueryParams,
 ) -> std::result::Result<String, String> {
+    RATE_LIMITER.wait().await;
     let url = format!(
         "{ARXIV_API_BASE}?search_query={}&max_results={}&start={}&sortBy={}&sortOrder={}",
         urlencoding::encode(&params.search_query),
@@ -176,6 +214,7 @@ async fn fetch_arxiv_query(
 }
 
 async fn fetch_html(paper_id: &str) -> std::result::Result<Option<String>, String> {
+    RATE_LIMITER.wait().await;
     let url = format!("{ARXIV_HTML_BASE}/{paper_id}");
     let request = Request::new(&url, Method::Get).map_err(|e| e.to_string())?;
     let mut response = Fetch::Request(request)
