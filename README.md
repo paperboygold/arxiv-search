@@ -1,6 +1,6 @@
 # arxiv-search-rs-mcp
 
-Rust MCP server for arXiv search and paper retrieval. The repo now follows the same split as your YouTube MCP:
+Rust MCP server for arXiv search and paper retrieval. The repository exposes several MCP tools and follows a split architecture:
 
 - `crates/native` for the local binary and stdio/SSE MCP transport
 - `crates/worker` for a Cloudflare Worker deploy path
