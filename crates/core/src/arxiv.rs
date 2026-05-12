@@ -45,6 +45,24 @@ fn format_arxiv_date(date: &str) -> Result<String, ArxivError> {
     Ok(format!("{}{}{}0000", parts[0], parts[1], parts[2]))
 }
 
+/// Escape Lucene special characters to prevent arXiv's search backend from
+/// interpreting them as wildcards or operators (e.g. `*` in `C*-algebra`).
+fn sanitize_lucene_query(q: &str) -> String {
+    let mut out = String::with_capacity(q.len() * 2);
+    for ch in q.chars() {
+        // Lucene special chars that need escaping.
+        // We intentionally do NOT escape `"` or `:` so that arXiv field syntax
+        // (ti:, au:, abs:) and quoted phrases still work.
+        if matches!(ch, '+' | '!' | '(' | ')' | '{' | '}' | '[' | ']'
+                      | '^' | '~' | '*' | '?' | '\\' | '/')
+        {
+            out.push('\\');
+        }
+        out.push(ch);
+    }
+    out
+}
+
 /// Build arXiv query parameters from search criteria.
 ///
 /// # Errors
@@ -58,7 +76,7 @@ pub fn build_query_params(
     categories: &[String],
     sort_by: &str,
 ) -> Result<QueryParams, ArxivError> {
-    let mut q = query.to_string();
+    let mut q = sanitize_lucene_query(query);
 
     if !categories.is_empty() {
         let cat_filter = categories

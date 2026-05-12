@@ -13,6 +13,8 @@ const ARXIV_PDF_BASE: &str = "https://arxiv.org/pdf";
 const SS_API_BASE: &str = "https://api.semanticscholar.org/graph/v1";
 const SS_REC_BASE: &str = "https://api.semanticscholar.org/recommendations/v1";
 const ARXIV_RATE_LIMIT: Duration = Duration::from_secs(3);
+const MAX_RETRIES: u32 = 3;
+const RETRY_BASE_MS: u64 = 3_000;
 
 #[derive(Debug, Clone)]
 pub struct FetchClient {
@@ -57,44 +59,68 @@ impl FetchClient {
     /// # Errors
     ///
     /// Returns an error if the HTTP request fails, the server returns an error status, or the
-    /// response body cannot be read.
+    /// response body cannot be read. Retries transient 429/503 errors with exponential backoff.
     pub async fn fetch_arxiv_query(&self, params: &QueryParams) -> Result<String> {
-        self.arxiv_rate_limit().await;
-        self.client
-            .get(ARXIV_API_BASE)
-            .query(&[
-                ("search_query", params.search_query.as_str()),
-                ("max_results", &params.max_results.to_string()),
-                ("sortBy", params.sort_by.as_str()),
-                ("sortOrder", params.sort_order.as_str()),
-            ])
-            .send()
-            .await
-            .context("arXiv API request failed")?
-            .error_for_status()
-            .context("arXiv API returned error status")?
-            .text()
-            .await
-            .context("failed to read arXiv response body")
+        for attempt in 0..MAX_RETRIES {
+            self.arxiv_rate_limit().await;
+            let response = self
+                .client
+                .get(ARXIV_API_BASE)
+                .query(&[
+                    ("search_query", params.search_query.as_str()),
+                    ("max_results", &params.max_results.to_string()),
+                    ("sortBy", params.sort_by.as_str()),
+                    ("sortOrder", params.sort_order.as_str()),
+                ])
+                .send()
+                .await
+                .context("arXiv API request failed")?;
+            let status = response.status().as_u16();
+            if status == 429 || status == 503 {
+                let delay = RETRY_BASE_MS * 2u64.pow(attempt);
+                tracing::warn!("arXiv returned {status}, retrying in {delay}ms (attempt {}/{})", attempt + 1, MAX_RETRIES);
+                tokio::time::sleep(Duration::from_millis(delay)).await;
+                continue;
+            }
+            return response
+                .error_for_status()
+                .context("arXiv API returned error status")?
+                .text()
+                .await
+                .context("failed to read arXiv response body");
+        }
+        anyhow::bail!("arXiv API failed after {MAX_RETRIES} retries (429/503)")
     }
 
     /// # Errors
     ///
     /// Returns an error if the HTTP request fails, the server returns an error status, or the
-    /// response body cannot be read.
+    /// response body cannot be read. Retries transient 429/503 errors with exponential backoff.
     pub async fn fetch_arxiv_by_id(&self, paper_id: &str) -> Result<String> {
-        self.arxiv_rate_limit().await;
-        self.client
-            .get(ARXIV_API_BASE)
-            .query(&[("id_list", paper_id)])
-            .send()
-            .await
-            .context("arXiv ID lookup request failed")?
-            .error_for_status()
-            .context("arXiv API returned error status")?
-            .text()
-            .await
-            .context("failed to read arXiv response body")
+        for attempt in 0..MAX_RETRIES {
+            self.arxiv_rate_limit().await;
+            let response = self
+                .client
+                .get(ARXIV_API_BASE)
+                .query(&[("id_list", paper_id)])
+                .send()
+                .await
+                .context("arXiv ID lookup request failed")?;
+            let status = response.status().as_u16();
+            if status == 429 || status == 503 {
+                let delay = RETRY_BASE_MS * 2u64.pow(attempt);
+                tracing::warn!("arXiv returned {status} for id {paper_id}, retrying in {delay}ms (attempt {}/{})", attempt + 1, MAX_RETRIES);
+                tokio::time::sleep(Duration::from_millis(delay)).await;
+                continue;
+            }
+            return response
+                .error_for_status()
+                .context("arXiv API returned error status")?
+                .text()
+                .await
+                .context("failed to read arXiv response body");
+        }
+        anyhow::bail!("arXiv ID lookup failed after {MAX_RETRIES} retries (429/503)")
     }
 
     /// # Errors
