@@ -1,15 +1,30 @@
 use serde::{Deserialize, Serialize};
 use worker::*;
 
+use async_trait::async_trait;
 use arxiv_search_rs_mcp_core::{
     arxiv::{build_query_params, normalize_paper_id, parse_response},
     content::{prepare_paper, PreparationOptions},
     html::to_markdown,
-    Paper,
+    Paper, RateLimiter,
 };
 
 const ARXIV_API_BASE: &str = "https://export.arxiv.org/api/query";
 const ARXIV_HTML_BASE: &str = "https://arxiv.org/html";
+
+struct WorkerRateLimiter;
+
+#[async_trait]
+impl RateLimiter for WorkerRateLimiter {
+    async fn wait(&self) {
+        // Stub: In a stateless worker, we don't track across requests yet.
+        // If we needed to, we'd use Durable Objects.
+    }
+}
+
+lazy_static::lazy_static! {
+    static ref RATE_LIMITER: WorkerRateLimiter = WorkerRateLimiter;
+}
 
 #[derive(Deserialize)]
 struct RpcRequest {
@@ -161,6 +176,7 @@ async fn fetch_text(url: &str) -> std::result::Result<String, String> {
 async fn fetch_arxiv_query(
     params: &arxiv_search_rs_mcp_core::arxiv::QueryParams,
 ) -> std::result::Result<String, String> {
+    RATE_LIMITER.wait().await;
     let url = format!(
         "{ARXIV_API_BASE}?search_query={}&max_results={}&sortBy={}&sortOrder={}",
         urlencoding::encode(&params.search_query),
@@ -172,6 +188,7 @@ async fn fetch_arxiv_query(
 }
 
 async fn fetch_html(paper_id: &str) -> std::result::Result<Option<String>, String> {
+    RATE_LIMITER.wait().await;
     let url = format!("{ARXIV_HTML_BASE}/{paper_id}");
     let request = Request::new(&url, Method::Get).map_err(|e| e.to_string())?;
     let mut response = Fetch::Request(request)

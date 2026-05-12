@@ -1,4 +1,5 @@
 mod fetch;
+mod rate_limit;
 mod tool;
 
 use anyhow::{Context as _, Result};

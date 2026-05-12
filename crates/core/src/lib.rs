@@ -3,7 +3,10 @@ pub mod content;
 pub mod error;
 pub mod html;
 pub mod paper;
+pub mod rate_limit;
 pub mod semantic_scholar;
+
+pub use rate_limit::{NoopRateLimiter, RateLimiter};
 
 #[cfg(not(target_arch = "wasm32"))]
 pub mod pdf;
