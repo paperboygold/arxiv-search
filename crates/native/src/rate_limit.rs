@@ -78,83 +78,57 @@ impl RateLimiter for FileRateLimiter {
         let lock_file_path = self.lock_file_path.clone();
         let delay_ms = self.delay.as_millis() as u64;
 
-        // Step 1: Acquire lock and claim the next available slot
-        let sleep_ms = tokio::task::spawn_blocking(move || -> u64 {
-            tracing::debug!("Attempting to open rate limit lock file at {:?}", lock_file_path);
+        // Use a spawn_blocking to handle synchronous file locking
+        let (sleep_ms, wait_for_lock) = tokio::task::spawn_blocking(move || -> (u64, Duration) {
+            let start = std::time::Instant::now();
+            
             let file = std::fs::OpenOptions::new()
                 .read(true)
                 .write(true)
                 .create(true)
                 .open(&lock_file_path)
-                .unwrap_or_else(|e| panic!("Failed to open rate limit lock file: {:?}", e));
+                .expect("Failed to open rate limit lock file");
 
             let mut lock = fd_lock::RwLock::new(file);
-            tracing::debug!("Attempting to acquire write lock on rate limit file...");
             
-            // Wait up to 30 seconds to acquire the lock to detect indefinite deadlocks
-            let lock_start = std::time::Instant::now();
-            let mut guard = loop {
-                match lock.try_write() {
-                    Ok(g) => break g,
-                    Err(e) => {
-                        if lock_start.elapsed() > Duration::from_secs(30) {
-                            tracing::error!("Indefinite hang detected: Could not acquire rate limit lock after 30 seconds. Another process may be deadlocked.");
-                            panic!("Rate limit lock acquisition timed out");
-                        }
-                        tracing::trace!("Lock held by another process, waiting... ({:?})", e);
-                        std::thread::sleep(Duration::from_millis(50));
-                    }
-                }
-            };
-
-            tracing::debug!("Acquired write lock on rate limit file in {:?}", lock_start.elapsed());
+            // Blocking lock acquisition is more robust than a spin loop
+            let mut guard = lock.write().expect("Failed to acquire rate limit lock");
+            let wait_for_lock = start.elapsed();
 
             let now = Self::get_now_ms();
             let mut content = String::new();
-            if let Err(e) = guard.read_to_string(&mut content) {
-                tracing::warn!("Failed to read rate limit file content: {:?}", e);
-            }
+            let _ = guard.read_to_string(&mut content);
             
             let mut last_request = content.trim().parse::<u64>().unwrap_or(0);
-            tracing::debug!("Rate limit file contained last_request: {}", last_request);
             
-            // Safety check: if last_request is too far in the future (e.g. clock skew), reset it.
-            // We increase this to 10 minutes (600,000ms) to allow for long request queues 
-            // without triggering a reset that causes a burst of 429s.
+            // Reset if too far in the future (clock skew or corruption)
             if last_request > now + 600_000 {
-                tracing::warn!("Rate limit file has extreme future timestamp ({}), likely clock skew, resetting to now", last_request);
                 last_request = 0;
             }
 
-            // Calculate the earliest time the next request can start.
             let next_allowed_start = if last_request == 0 {
                 now
             } else {
                 (last_request + delay_ms).max(now)
             };
+            
             let sleep_ms = next_allowed_start - now;
 
-            if let Err(e) = guard.set_len(0) {
-                tracing::error!("Failed to truncate rate limit file: {:?}", e);
-            }
-            if let Err(e) = guard.seek(std::io::SeekFrom::Start(0)) {
-                tracing::error!("Failed to seek rate limit file: {:?}", e);
-            }
-            if let Err(e) = guard.write_all(next_allowed_start.to_string().as_bytes()) {
-                tracing::error!("Failed to write to rate limit file: {:?}", e);
-            }
-            
-            if sleep_ms > 5000 {
-                tracing::info!("arXiv rate limit queue deep: {}ms wait ahead", sleep_ms);
-            }
-            
-            tracing::debug!("Releasing rate limit lock. Next allowed start: {}, sleeping for {}ms", next_allowed_start, sleep_ms);
-            sleep_ms
+            // Atomically update the file
+            let _ = guard.set_len(0);
+            let _ = guard.seek(std::io::SeekFrom::Start(0));
+            let _ = guard.write_all(next_allowed_start.to_string().as_bytes());
+            let _ = guard.flush();
+
+            (sleep_ms, wait_for_lock)
         }).await.expect("spawn_blocking failed");
 
-        // Step 2: Sleep if necessary outside of the lock
+        if wait_for_lock > Duration::from_millis(100) {
+            tracing::warn!(?wait_for_lock, "High contention on rate limit lock");
+        }
+
         if sleep_ms > 0 {
-            tracing::info!("arXiv rate limit: serializing request, sleeping for {}ms", sleep_ms);
+            tracing::info!(sleep_ms, "ArXiv rate limit: serializing request");
             tokio::time::sleep(Duration::from_millis(sleep_ms)).await;
         }
     }

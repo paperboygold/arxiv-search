@@ -521,6 +521,8 @@ impl ArxivServer {
         #[schemars(description = "JSON object with query string 'q' (or 'query'). See arxiv://openapi for full schema.")]
         code: String,
     ) -> Result<CallToolResult, rmcp::Error> {
+        let span = tracing::info_span!("mcp_tool_search");
+        let _enter = span.enter();
         let input: SearchInput = serde_json::from_str(&code)
             .map_err(|e| rmcp::Error::invalid_params(format!("invalid JSON: {e}"), None))?;
         
@@ -569,6 +571,8 @@ impl ArxivServer {
         )]
         code: String,
     ) -> Result<CallToolResult, rmcp::Error> {
+        let span = tracing::info_span!("mcp_tool_retrieve_paper");
+        let _enter = span.enter();
         let input: RetrieveInput = serde_json::from_str(&code)
             .map_err(|e| rmcp::Error::invalid_params(format!("invalid JSON: {e}"), None))?;
         let out = self.run_retrieve(input).await?;
@@ -586,6 +590,8 @@ impl ArxivServer {
         #[schemars(description = "JSON object with query string 'q' (or 'query'). See arxiv://openapi for full schema.")]
         code: String,
     ) -> Result<CallToolResult, rmcp::Error> {
+        let span = tracing::info_span!("mcp_tool_hdrr");
+        let _enter = span.enter();
         let input: HdrrInput = serde_json::from_str(&code)
             .map_err(|e| rmcp::Error::invalid_params(format!("invalid JSON: {e}"), None))?;
         let out = self.run_hdrr(&input)?;
@@ -610,6 +616,8 @@ impl ArxivServer {
         )]
         code: String,
     ) -> Result<CallToolResult, rmcp::Error> {
+        let span = tracing::info_span!("mcp_tool_execute");
+        let _enter = span.enter();
         let raw: Value = serde_json::from_str(&code)
             .map_err(|e| rmcp::Error::invalid_params(format!("invalid JSON: {e}"), None))?;
 

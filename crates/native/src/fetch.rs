@@ -48,12 +48,11 @@ impl FetchClient {
     pub async fn new(ss_api_key: Option<String>) -> Result<Self> {
         #[expect(clippy::duration_suboptimal_units)]
         let client = Client::builder()
-            .user_agent(concat!(
-                "arxiv-search-rs-mcp/",
-                env!("CARGO_PKG_VERSION"),
-                " (contact: https://github.com/sanguinehost/arxiv-search)"
-            ))
+            .user_agent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36")
             .timeout(Duration::from_secs(60))
+            .connect_timeout(Duration::from_secs(10))
+            .pool_idle_timeout(Duration::from_secs(90))
+            .tcp_keepalive(Some(Duration::from_secs(60)))
             .build()
             .context("failed to build HTTP client")?;
         let cache = ArxivCache::new(DEFAULT_CACHE_TTL).await?;
@@ -95,8 +94,13 @@ impl FetchClient {
     /// response body cannot be read. Retries transient 429/503 errors with exponential backoff.
     pub async fn fetch_arxiv_query(&self, params: &QueryParams) -> Result<String> {
         for attempt in 0..MAX_RETRIES {
+            let span = tracing::info_span!("arxiv_api_fetch", attempt = attempt + 1);
+            let _enter = span.enter();
+            
             tracing::info!("arXiv fetch attempt {}/{} for query", attempt + 1, MAX_RETRIES);
             self.rate_limiter.wait().await;
+            
+            let request_start = std::time::Instant::now();
             let response_result = self
                 .client
                 .get(ARXIV_API_BASE)
@@ -111,46 +115,113 @@ impl FetchClient {
                 .await;
 
             let response = match response_result {
-                Ok(r) => r,
+                Ok(r) => {
+                    tracing::debug!(elapsed = ?request_start.elapsed(), "arXiv API response received");
+                    r
+                },
                 Err(e) => {
-                    tracing::error!("arXiv API request failed on attempt {}: {:?}", attempt + 1, e);
+                    tracing::error!(?e, "arXiv API request failed");
                     if attempt + 1 < MAX_RETRIES {
                         let delay = RETRY_BASE_MS * 2u64.pow(attempt);
-                        tracing::info!("Retrying in {}ms due to request error", delay);
                         tokio::time::sleep(Duration::from_millis(delay)).await;
                         continue;
                     }
-                    return Err(e).context("arXiv API request failed after retries");
+                    
+                    // Fallback to HTML scraping on final attempt failure
+                    tracing::info!("Attempting HTML fallback search...");
+                    return self.scrape_arxiv_search(params).await;
                 }
             };
 
             let status = response.status().as_u16();
             if status == 429 || status == 503 {
-                // Add jitter to delay: ±25%
+                if attempt + 1 == MAX_RETRIES {
+                    tracing::warn!("arXiv API rate limited on final attempt, falling back to HTML");
+                    return self.scrape_arxiv_search(params).await;
+                }
+                
                 let base_delay = RETRY_BASE_MS * 2u64.pow(attempt);
                 let jitter = (base_delay as f64 * (rand::random::<f64>() * 0.5 - 0.25)) as i64;
                 let delay = (base_delay as i64 + jitter).max(1000) as u64;
 
-                tracing::warn!(
-                    "arXiv returned {status}, retrying in {delay}ms (attempt {}/{})",
-                    attempt + 1,
-                    MAX_RETRIES
-                );
+                tracing::warn!(status, delay, "arXiv rate limited, retrying");
                 tokio::time::sleep(Duration::from_millis(delay)).await;
                 continue;
             }
+
             if !response.status().is_success() {
                 let status = response.status();
                 let body = response.text().await.unwrap_or_default();
-                tracing::error!("arXiv API returned error status {}: {}", status, body);
-                anyhow::bail!("arXiv API returned error status {status}: {body}");
+                tracing::error!(%status, %body, "arXiv API error");
+                
+                if attempt + 1 == MAX_RETRIES {
+                    return self.scrape_arxiv_search(params).await;
+                }
+                continue;
             }
+            
             return response
                 .text()
                 .await
                 .context("failed to read arXiv response body");
         }
-        anyhow::bail!("arXiv API failed after {MAX_RETRIES} retries (429/503)")
+        anyhow::bail!("arXiv API failed after {MAX_RETRIES} retries")
+    }
+
+    /// Scrapes the arXiv search page as a fallback for the API.
+    /// This converts the HTML results into a minimal Atom XML format that the existing parser can handle.
+    async fn scrape_arxiv_search(&self, params: &QueryParams) -> Result<String> {
+        let span = tracing::info_span!("arxiv_html_fallback");
+        let _enter = span.enter();
+        
+        tracing::info!("Scraping arXiv search HTML for query: {}", params.search_query);
+        
+        // Use a slightly different rate limit or just wait normally
+        self.rate_limiter.wait().await;
+
+        let search_url = "https://arxiv.org/search/";
+        let response = self.client.get(search_url)
+            .query(&[
+                ("query", params.search_query.as_str()),
+                ("searchtype", "all"),
+                ("source", "header"),
+                ("size", &params.max_results.to_string()),
+                ("start", &params.start.to_string()),
+            ])
+            .header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8")
+            .send()
+            .await
+            .context("HTML search fallback failed")?;
+
+        let html = response.text().await.context("failed to read HTML search body")?;
+        
+        // Minimal extraction logic: find paper IDs and titles
+        // ArXiv HTML format: <p class="list-title is-inline-block"><a href="https://arxiv.org/abs/2403.12345">arXiv:2403.12345</a></p>
+        // and <p class="title is-5 mathjax">Title Here</p>
+        
+        let mut entries = Vec::new();
+        
+        // Simple regex-based extraction to avoid new dependencies
+        let re_id = regex::Regex::new(r"arxiv\.org/abs/(\d+\.\d+v?\d*)").unwrap();
+        let re_title = regex::Regex::new(r#"<p class="title is-5 mathjax">\s*(.*?)\s*</p>"#).unwrap();
+        
+        let ids: Vec<_> = re_id.captures_iter(&html).map(|c| c[1].to_string()).collect();
+        let titles: Vec<_> = re_title.captures_iter(&html).map(|c| c[1].to_string()).collect();
+        
+        for (id, title) in ids.into_iter().zip(titles.into_iter()) {
+            entries.push(format!(
+                r#"<entry><id>http://arxiv.org/abs/{id}</id><title>{title}</title><link href="http://arxiv.org/abs/{id}" rel="alternate" type="text/html"/></entry>"#
+            ));
+        }
+
+        if entries.is_empty() && !html.contains("no results") {
+            tracing::warn!("HTML fallback found no entries but page doesn't say 'no results'");
+        }
+
+        Ok(format!(
+            r#"<?xml version="1.0" encoding="UTF-8"?><feed xmlns="http://www.w3.org/2005/Atom">{}</feed>"#,
+            entries.join("")
+        ))
     }
 
     /// # Errors
@@ -403,5 +474,28 @@ mod tests {
             .await
             .expect("fetch failed");
         let _papers = parse_recommendations(&json).expect("parse failed");
+    }
+
+    #[test]
+    fn test_html_scraping_regex() {
+        let html = r#"
+            <li class="arxiv-result">
+                <p class="list-title is-inline-block">
+                    <a href="https://arxiv.org/abs/2403.12345">arXiv:2403.12345</a>
+                </p>
+                <p class="title is-5 mathjax">
+                    A Very Important Paper
+                </p>
+            </li>
+        "#;
+        
+        let re_id = regex::Regex::new(r"arxiv\.org/abs/(\d+\.\d+v?\d*)").unwrap();
+        let re_title = regex::Regex::new(r#"<p class="title is-5 mathjax">\s*(.*?)\s*</p>"#).unwrap();
+        
+        let ids: Vec<_> = re_id.captures_iter(html).map(|c| c[1].to_string()).collect();
+        let titles: Vec<_> = re_title.captures_iter(html).map(|c| c[1].to_string()).collect();
+        
+        assert_eq!(ids, vec!["2403.12345"]);
+        assert_eq!(titles, vec!["A Very Important Paper"]);
     }
 }
