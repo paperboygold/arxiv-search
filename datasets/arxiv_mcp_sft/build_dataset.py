@@ -385,6 +385,187 @@ PAPERS = {
             "taxonomy across the literature."
         ),
     },
+    "1301.3781": {
+        "title": "Efficient Estimation of Word Representations in Vector Space",
+        "authors": ["Tomas Mikolov", "Kai Chen", "Greg Corrado"],
+        "cats": ["cs.CL"],
+        "published": "2013-01-16T17:24:43Z",
+        "abstract": (
+            "We propose two novel model architectures for computing continuous "
+            "vector representations of words from very large data sets "
+            "(word2vec), drastically reducing computational cost while improving "
+            "accuracy on word-similarity tasks."
+        ),
+    },
+    "1406.2661": {
+        "title": "Generative Adversarial Networks",
+        "authors": ["Ian J. Goodfellow", "Jean Pouget-Abadie", "Mehdi Mirza"],
+        "cats": ["cs.LG", "stat.ML"],
+        "published": "2014-06-10T18:58:17Z",
+        "abstract": (
+            "We propose estimating generative models via an adversarial process, "
+            "training a generator and a discriminator simultaneously; the "
+            "generator learns to produce samples indistinguishable from real data."
+        ),
+    },
+    "1502.03167": {
+        "title": "Batch Normalization: Accelerating Deep Network Training by Reducing Internal Covariate Shift",
+        "authors": ["Sergey Ioffe", "Christian Szegedy"],
+        "cats": ["cs.LG"],
+        "published": "2015-02-11T00:00:00Z",
+        "abstract": (
+            "We introduce Batch Normalization, which normalizes layer inputs per "
+            "mini-batch to reduce internal covariate shift, allowing much higher "
+            "learning rates, easier initialization, and acting as a regularizer."
+        ),
+    },
+    "1312.5602": {
+        "title": "Playing Atari with Deep Reinforcement Learning",
+        "authors": ["Volodymyr Mnih", "Koray Kavukcuoglu", "David Silver"],
+        "cats": ["cs.LG"],
+        "published": "2013-12-19T00:00:00Z",
+        "abstract": (
+            "We present the first deep learning model to successfully learn "
+            "control policies directly from high-dimensional sensory input using "
+            "reinforcement learning, applied to Atari 2600 games (DQN)."
+        ),
+    },
+    "1707.06347": {
+        "title": "Proximal Policy Optimization Algorithms",
+        "authors": ["John Schulman", "Filip Wolski", "Prafulla Dhariwal"],
+        "cats": ["cs.LG"],
+        "published": "2017-07-20T00:00:00Z",
+        "abstract": (
+            "We propose Proximal Policy Optimization (PPO), policy-gradient "
+            "methods that alternate sampling data with optimizing a clipped "
+            "surrogate objective, balancing simplicity, stability, and sample "
+            "efficiency."
+        ),
+    },
+    "1609.02907": {
+        "title": "Semi-Supervised Classification with Graph Convolutional Networks",
+        "authors": ["Thomas N. Kipf", "Max Welling"],
+        "cats": ["cs.LG", "stat.ML"],
+        "published": "2016-09-09T00:00:00Z",
+        "abstract": (
+            "We present a scalable approach for semi-supervised learning on "
+            "graph-structured data based on an efficient variant of convolutional "
+            "neural networks that operate directly on graphs (GCN)."
+        ),
+    },
+    "2006.11239": {
+        "title": "Denoising Diffusion Probabilistic Models",
+        "authors": ["Jonathan Ho", "Ajay Jain", "Pieter Abbeel"],
+        "cats": ["cs.LG", "stat.ML"],
+        "published": "2020-06-19T00:00:00Z",
+        "abstract": (
+            "We present high-quality image synthesis with denoising diffusion "
+            "probabilistic models, latent-variable models trained to reverse a "
+            "gradual noising process, drawing a connection to denoising score "
+            "matching with Langevin dynamics."
+        ),
+    },
+    "2103.00020": {
+        "title": "Learning Transferable Visual Models From Natural Language Supervision",
+        "authors": ["Alec Radford", "Jong Wook Kim", "Chris Hallacy"],
+        "cats": ["cs.CV", "cs.LG"],
+        "published": "2021-02-26T00:00:00Z",
+        "abstract": (
+            "We show that predicting which caption goes with which image is an "
+            "efficient, scalable way to learn image representations from scratch, "
+            "enabling zero-shot transfer to many downstream tasks (CLIP)."
+        ),
+    },
+    "2304.02643": {
+        "title": "Segment Anything",
+        "authors": ["Alexander Kirillov", "Eric Mintun", "Nikhila Ravi"],
+        "cats": ["cs.CV"],
+        "published": "2023-04-05T00:00:00Z",
+        "abstract": (
+            "We introduce the Segment Anything project: a promptable segmentation "
+            "model trained on over one billion masks, enabling strong zero-shot "
+            "generalization to new image distributions and tasks (SAM)."
+        ),
+    },
+    "2302.04761": {
+        "title": "Toolformer: Language Models Can Teach Themselves to Use Tools",
+        "authors": ["Timo Schick", "Jane Dwivedi-Yu", "Roberto Dessi"],
+        "cats": ["cs.CL"],
+        "published": "2023-02-09T00:00:00Z",
+        "abstract": (
+            "We show language models can teach themselves to use external tools "
+            "via simple APIs, deciding which tool to call, when, and how to fold "
+            "the results into generation (Toolformer)."
+        ),
+    },
+    "2210.03629": {
+        "title": "ReAct: Synergizing Reasoning and Acting in Language Models",
+        "authors": ["Shunyu Yao", "Jeffrey Zhao", "Dian Yu"],
+        "cats": ["cs.CL", "cs.AI"],
+        "published": "2022-10-06T00:00:00Z",
+        "abstract": (
+            "We use LLMs to generate reasoning traces and task-specific actions in "
+            "an interleaved manner (ReAct), letting the model query external "
+            "sources, reducing hallucination, and improving interpretability."
+        ),
+    },
+    "2205.14135": {
+        "title": "FlashAttention: Fast and Memory-Efficient Exact Attention with IO-Awareness",
+        "authors": ["Tri Dao", "Daniel Y. Fu", "Stefano Ermon"],
+        "cats": ["cs.LG"],
+        "published": "2022-05-27T00:00:00Z",
+        "abstract": (
+            "We propose FlashAttention, an IO-aware exact attention algorithm "
+            "using tiling to cut memory reads/writes between GPU HBM and on-chip "
+            "SRAM, speeding up training and reducing memory footprint."
+        ),
+    },
+    "2312.00752": {
+        "title": "Mamba: Linear-Time Sequence Modeling with Selective State Spaces",
+        "authors": ["Albert Gu", "Tri Dao"],
+        "cats": ["cs.LG"],
+        "published": "2023-12-01T00:00:00Z",
+        "abstract": (
+            "We introduce Mamba, a selective state-space model giving linear-time "
+            "sequence modeling with content-based reasoning, matching or beating "
+            "Transformers across several modalities with fast inference."
+        ),
+    },
+    "2305.18290": {
+        "title": "Direct Preference Optimization: Your Language Model is Secretly a Reward Model",
+        "authors": ["Rafael Rafailov", "Archit Sharma", "Eric Mitchell"],
+        "cats": ["cs.LG", "cs.CL"],
+        "published": "2023-05-29T00:00:00Z",
+        "abstract": (
+            "We introduce Direct Preference Optimization (DPO), fine-tuning "
+            "language models to satisfy human preferences with a simple "
+            "classification loss, with no explicit reward model or reinforcement "
+            "learning loop."
+        ),
+    },
+    "2210.17323": {
+        "title": "GPTQ: Accurate Post-Training Quantization for Generative Pre-trained Transformers",
+        "authors": ["Elias Frantar", "Saleh Ashkboos", "Torsten Hoefler"],
+        "cats": ["cs.LG", "cs.CL"],
+        "published": "2022-10-31T00:00:00Z",
+        "abstract": (
+            "We propose GPTQ, a one-shot weight-quantization method based on "
+            "approximate second-order information that compresses GPT-scale models "
+            "to 3-4 bits per weight with negligible accuracy loss."
+        ),
+    },
+    "2212.04356": {
+        "title": "Robust Speech Recognition via Large-Scale Weak Supervision",
+        "authors": ["Alec Radford", "Jong Wook Kim", "Tao Xu"],
+        "cats": ["eess.AS", "cs.CL", "cs.SD"],
+        "published": "2022-12-06T00:00:00Z",
+        "abstract": (
+            "We study speech processing trained on 680,000 hours of multilingual, "
+            "multitask weakly-supervised audio (Whisper); the models generalize "
+            "well to standard benchmarks zero-shot, approaching human robustness "
+            "across languages and accents."
+        ),
+    },
 }
 
 # --------------------------------------------------------------------------- #
@@ -525,676 +706,590 @@ def exec_one(pid, op, value):
 EXAMPLES: list[list[dict]] = []
 E = EXAMPLES.append
 
-# ---- search: discovery & field filters ----------------------------------- #
+# Curated conversations: poorly-structured, natural-language requests in,
+# precise arXiv tool calls out. The user is vague/colloquial; the assistant's
+# job is to INTERPRET the request (domain -> category, "recent/lately" -> date
+# sort, intent -> abstract terms) and emit a well-formed query. The brief note
+# on each tool-call turn shows that interpretation step.
 
-# 1. Plain topic search.
+# ---- "go find me research on X" : minimal, vague topic --------------------- #
+
+# 1. Vague reasoning request -> infer cs.CL + reasoning terms.
 E([
-    usr("Find me a few foundational papers on the transformer architecture."),
-    call("search", {"q": "ti:transformer architecture attention", "n": 5, "sort": "relevance"},
-         note="Searching arXiv for foundational transformer papers."),
-    result("call_1", search_response(["1706.03762", "1910.10683", "2010.11929"], 4123)),
+    usr("go find me research on getting language models to reason through hard problems"),
+    call("search", {"q": "abs:reasoning large language models", "cats": ["cs.CL"], "n": 5, "sort": "relevance"},
+         note="Reading this as LLM reasoning work in cs.CL; searching abstracts for the core terms."),
+    result("call_1", search_response(["2201.11903", "2305.10601", "2210.03629"], 1842)),
     asst(
-        "Here are the foundational hits:\n"
-        "1. **Attention Is All You Need** (1706.03762, Vaswani et al., 2017) - introduces the Transformer, dropping recurrence/convolution for pure attention.\n"
-        "2. **Exploring the Limits of Transfer Learning (T5)** (1910.10683, Raffel et al., 2019) - unifies NLP tasks in a text-to-text Transformer.\n"
-        "3. **An Image is Worth 16x16 Words (ViT)** (2010.11929, Dosovitskiy et al., 2020) - applies the Transformer to image patches.\n\n"
-        "Want me to pull the full text of any of these?"
+        "Here's the core line of work on LLM reasoning:\n"
+        "1. **Chain-of-Thought Prompting** (2201.11903) - get the model to spell out intermediate steps; reasoning emerges with scale.\n"
+        "2. **Tree of Thoughts** (2305.10601) - generalizes that into a searchable tree with lookahead/backtracking.\n"
+        "3. **ReAct** (2210.03629) - interleaves reasoning with actions so the model can check itself against external info.\n\n"
+        "Want me to pull any of them in full?"
     ),
 ])
 
-# 2. Title + author field filters.
+# 2. "X for Y purpose to Z effect": efficiency for deployment on small GPUs.
 E([
-    usr("I'm looking for the 'Attention Is All You Need' paper by Vaswani specifically."),
-    call("search", {"q": "ti:\"attention is all you need\" AND au:vaswani", "n": 3},
-         note="Using title and author field filters to pin it down."),
+    usr("i need papers on running transformers cheaper so i can deploy them on smaller gpus"),
+    call("search", {"q": "abs:efficient transformer inference quantization memory", "cats": ["cs.LG"], "n": 6, "sort": "relevance"},
+         note="Intent = inference efficiency / lower memory for deployment -> cs.LG, abstract terms quantization + memory."),
+    result("call_1", search_response(["2210.17323", "2205.14135", "2009.06732"], 731)),
+    asst(
+        "For squeezing transformers onto smaller GPUs, three angles:\n"
+        "- **GPTQ** (2210.17323) - post-training quantization to 3-4 bits/weight with little accuracy loss; the most direct memory win.\n"
+        "- **FlashAttention** (2205.14135) - IO-aware attention that cuts memory traffic and speeds things up, no accuracy cost.\n"
+        "- **Efficient Transformers: A Survey** (2009.06732) - the map of the whole design space if you want options.\n\n"
+        "If your bottleneck is specifically VRAM at inference, start with GPTQ. Want its method section?"
+    ),
+])
+
+# 3. "lately/hot" -> recency, infer cs.CV + sort:date.
+E([
+    usr("whats the hot stuff in image generation lately"),
+    call("search", {"q": "abs:image generation diffusion", "cats": ["cs.CV"], "n": 5, "sort": "date"},
+         note="\"Hot lately\" -> sort by date; image generation -> cs.CV diffusion."),
+    result("call_1", search_response(["2112.10752", "2006.11239"], 2904)),
+    asst(
+        "Sorting by recency, the pillars of modern image generation are diffusion-based:\n"
+        "- **Latent Diffusion Models** (2112.10752) - runs diffusion in a compressed latent space; the basis of Stable Diffusion.\n"
+        "- **Denoising Diffusion Probabilistic Models** (2006.11239) - the DDPM formulation that kicked off the wave.\n\n"
+        "Want the latest follow-ups in a specific direction (text-to-image, video, control)?"
+    ),
+])
+
+# 4. "that paper everyone cites" -> title field search.
+E([
+    usr("find me that foundational attention paper everyone keeps citing"),
+    call("search", {"q": "ti:\"attention is all you need\"", "n": 1},
+         note="\"Foundational attention paper everyone cites\" almost certainly means Attention Is All You Need; pinning it by title."),
     result("call_1", search_response(["1706.03762"], 1)),
+    asst("That's **Attention Is All You Need** (arXiv:1706.03762, Vaswani et al., 2017) - it introduced the Transformer, built entirely on self-attention. Want the abstract or a breakdown of the architecture?"),
+])
+
+# 5. "where do i even start" -> roadmap from a vague pretraining ask.
+E([
+    usr("my prof told me to look into self-supervised pretraining for nlp and i have no idea where to start"),
+    call("search", {"q": "abs:self-supervised pre-training language representation", "cats": ["cs.CL"], "n": 5, "sort": "relevance"},
+         note="Turning a fuzzy 'where to start' into the seminal pretraining papers in cs.CL."),
+    result("call_1", search_response(["1810.04805", "1910.10683", "1301.3781"], 5120)),
     asst(
-        "Found it: **Attention Is All You Need** (arXiv:1706.03762), Vaswani et al., 2017, "
-        "categories cs.CL/cs.LG. https://arxiv.org/abs/1706.03762\n\n"
-        "It proposes the Transformer, built entirely on attention. Want the abstract or the full text?"
+        "A sensible reading order to get the foundations:\n"
+        "1. **word2vec** (1301.3781, 2013) - the idea that you can learn word meaning from raw text, no labels.\n"
+        "2. **BERT** (1810.04805, 2018) - masked-language-model pretraining of a bidirectional Transformer; the recipe everything else builds on.\n"
+        "3. **T5** (1910.10683, 2019) - frames every NLP task as text-to-text and scales the pretraining idea.\n\n"
+        "Start with BERT for the core concept; I can retrieve its method section when you're ready."
     ),
 ])
 
-# 3. Author-only search, sorted by date.
+# 6. "doing a lit review" on agents/tools.
 E([
-    usr("What are the most recent papers from Hugo Touvron?"),
-    call("search", {"q": "au:touvron", "n": 5, "sort": "date"},
-         note="Searching by author, newest first."),
-    result("call_1", search_response(["2307.09288", "2302.13971"], 12)),
+    usr("anything on ai agents that can use tools and apis? doing a lit review"),
+    call("search", {"q": "abs:language model tool use agents", "cats": ["cs.CL", "cs.AI"], "n": 6, "sort": "relevance"},
+         note="Tool-using LLM agents -> cs.CL/cs.AI; abstract search on tool use + agents."),
+    result("call_1", search_response(["2302.04761", "2210.03629"], 612)),
     asst(
-        "Most recent first:\n"
-        "1. **Llama 2: Open Foundation and Fine-Tuned Chat Models** (2307.09288, 2023)\n"
-        "2. **LLaMA: Open and Efficient Foundation Language Models** (2302.13971, 2023)\n\n"
-        "Both are from the LLaMA line of open foundation models."
+        "Two anchor papers for the lit review:\n"
+        "- **Toolformer** (2302.04761) - the model teaches itself when/how to call APIs and fold results back in.\n"
+        "- **ReAct** (2210.03629) - interleaves reasoning traces with actions so the agent can query external sources mid-task.\n\n"
+        "Both are highly cited starting points; want me to pull each one's citations to expand the review tree?"
     ),
 ])
 
-# 4. Category-filtered search.
+# 7. Casual "the rlhf stuff".
 E([
-    usr("Show me retrieval-augmented generation work, but only in NLP categories."),
-    call("search",
-         {"q": "abs:retrieval augmented generation", "cats": ["cs.CL", "cs.LG"], "n": 5, "sort": "relevance"},
-         note="Restricting to cs.CL and cs.LG with a category filter."),
-    result("call_1", search_response(["2005.11401"], 287)),
+    usr("papers on training models from human preferences, the rlhf kind of thing"),
+    call("search", {"q": "abs:human feedback preference fine-tuning", "cats": ["cs.CL", "cs.LG"], "n": 5, "sort": "relevance"},
+         note="\"rlhf kind of thing\" = learning from human preferences; cs.CL/cs.LG, abstract terms human feedback + preference."),
+    result("call_1", search_response(["2203.02155", "2305.18290"], 488)),
     asst(
-        "Top result in cs.CL/cs.LG: **Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks** "
-        "(2005.11401, Lewis et al., 2020). It pairs a parametric seq2seq model with a dense retriever over "
-        "Wikipedia. Want me to retrieve the method section?"
+        "The two you want:\n"
+        "- **InstructGPT** (2203.02155) - the canonical RLHF pipeline: demonstrations + preference comparisons + RL fine-tuning.\n"
+        "- **Direct Preference Optimization (DPO)** (2305.18290) - gets the same alignment from preferences with a simple loss, skipping the RL loop.\n\n"
+        "DPO is the lighter-weight successor if you're going to implement something."
     ),
 ])
 
-# 5. Date-ranged search.
+# 8. "understand how X works" -> find + deep read chain.
 E([
-    usr("Find diffusion model papers submitted in 2021."),
-    call("search",
-         {"q": "abs:diffusion model image synthesis", "from": "2021-01-01", "to": "2021-12-31",
-          "cats": ["cs.CV"], "n": 5, "sort": "date"},
-         note="Adding a 2021 submittedDate window and a cs.CV filter."),
-    result("call_1", search_response(["2112.10752"], 64)),
-    asst(
-        "From 2021: **High-Resolution Image Synthesis with Latent Diffusion Models** "
-        "(2112.10752, Rombach et al., Dec 2021) - the latent-diffusion approach behind Stable Diffusion. "
-        "It runs the diffusion process in a compressed latent space for efficiency."
-    ),
-])
-
-# 6. Pagination via offset.
-E([
-    usr("Search for mixture-of-experts language models."),
-    call("search", {"q": "abs:mixture of experts language model", "n": 5, "sort": "relevance"},
-         note="Initial search for MoE language models."),
-    result("call_1", search_response(["2401.04088"], 51)),
-    asst("Top hit: **Mixtral of Experts** (2401.04088, Jiang et al., 2024), a sparse MoE with 8 experts per layer. There are 51 results total - say the word for more."),
-    usr("Yeah, show me the next page."),
-    call("search", {"q": "abs:mixture of experts language model", "n": 5, "offset": 5, "sort": "relevance"},
-         cid="call_2", note="Fetching the next page with offset=5."),
-    result("call_2", search_response(["2009.06732"], 51, start=5)),
-    asst("Next page includes **Efficient Transformers: A Survey** (2009.06732, Tay et al., 2020), which covers sparse and MoE variants among other efficiency techniques."),
-])
-
-# 7. Abstract field + ANDNOT boolean.
-E([
-    usr("I want papers about attention mechanisms but not the ones focused on computer vision."),
-    call("search", {"q": "abs:attention mechanism ANDNOT cat:cs.CV", "n": 5, "sort": "relevance"},
-         note="Excluding cs.CV with ANDNOT."),
-    result("call_1", search_response(["1706.03762", "2104.09864"], 932)),
-    asst(
-        "Non-vision attention work:\n"
-        "1. **Attention Is All You Need** (1706.03762) - the core self-attention Transformer.\n"
-        "2. **RoFormer: Enhanced Transformer with Rotary Position Embedding** (2104.09864) - improves how attention encodes position via RoPE."
-    ),
-])
-
-# ---- retrieve_paper: deep single-paper reads ------------------------------ #
-
-# 8. Straight retrieve by id.
-E([
-    usr("Pull the full text of arXiv 2106.09685 so I can read how LoRA works."),
-    call("retrieve_paper", {"paper_id": "2106.09685"},
-         note="Retrieving and chunking the LoRA paper."),
-    result("call_1", prepared(
-        "2106.09685", "html",
+    usr("i wanna actually understand how diffusion models work, grab the key paper and walk me through it"),
+    call("search", {"q": "ti:denoising diffusion probabilistic models", "n": 1},
+         note="Finding the canonical diffusion paper first so I read the right one."),
+    result("call_1", search_response(["2006.11239"], 3)),
+    call("retrieve_paper", {"paper_id": "2006.11239", "segmentation_k": 1.2}, cid="call_2",
+         note="Retrieving DDPM with structure so I can walk through the actual method."),
+    result("call_2", prepared(
+        "2006.11239", "html",
         [
-            "# LoRA: Low-Rank Adaptation of Large Language Models\n\nWe propose freezing the pretrained weights W0 and representing the update as a low-rank product BA, so only A and B are trained.",
-            "## Method\n\nFor a pretrained weight matrix W0 in R^{d x k}, we constrain its update with a low-rank decomposition W0 + dW = W0 + BA, where B in R^{d x r}, A in R^{r x k}, and the rank r << min(d, k).",
+            "A forward process gradually adds Gaussian noise to data over T steps until it becomes pure noise.",
+            "A neural network is trained to reverse each step; sampling runs the learned reverse process from noise back to a clean image, and the training objective reduces to predicting the added noise.",
         ],
-        pruned_md="# LoRA...\n\n## Method\n\nFor a pretrained weight matrix W0...")),
+        pruned_md="# Denoising Diffusion Probabilistic Models\n\n...",
+        parents=["Method", "Method"],
+        clusters=["Forward Process", "Reverse Process"])),
     asst(
-        "Retrieved 2106.09685 (2 chunks). The core idea: freeze the pretrained weight matrix W0 and learn only a "
-        "low-rank update dW = BA, with B (d x r) and A (r x k) where rank r is tiny relative to the matrix "
-        "dimensions. That cuts trainable parameters by orders of magnitude while matching full fine-tuning quality. "
-        "Want me to read further into the experiments?"
+        "Found and read the key paper - **DDPM** (2006.11239). The mechanism in two halves:\n"
+        "1. **Forward process**: take a real image and add a little Gaussian noise repeatedly over T steps until it's pure noise. This part has no learned parameters.\n"
+        "2. **Reverse process**: train a network to undo one noising step at a time. Neatly, the training objective simplifies to *predicting the noise* that was added. To generate, you start from random noise and run the learned reverse steps back to a clean image.\n\n"
+        "That's the whole idea; later work (e.g. Latent Diffusion, 2112.10752) mostly makes it cheaper. Want the sampling details?"
     ),
 ])
 
-# 9. Retrieve with hierarchical segmentation_k for a complex paper.
+# 9. Vague "ditch convolutions".
 E([
-    usr("I need a deep, structured read of the Attention Is All You Need paper - keep the section structure."),
-    call("retrieve_paper", {"paper_id": "1706.03762", "segmentation_k": 1.2},
-         note="Enabling hierarchical segmentation (segmentation_k=1.2) to preserve structure."),
-    result("call_1", prepared(
+    usr("find research on vision models that ditch convolutions entirely"),
+    call("search", {"q": "abs:image recognition transformer ANDNOT abs:convolution", "cats": ["cs.CV"], "n": 4, "sort": "relevance"},
+         note="\"Ditch convolutions\" -> attention-based vision; exclude convolution in the abstract."),
+    result("call_1", search_response(["2010.11929"], 377)),
+    asst("The headline paper is **An Image is Worth 16x16 Words / ViT** (2010.11929). It drops convolution completely: split the image into patches, embed them, and feed the sequence to a plain Transformer encoder - and it beats CNNs once pre-trained on enough data."),
+])
+
+# 10. "really big models".
+E([
+    usr("what should i read about making neural nets really really big"),
+    call("search", {"q": "abs:scaling large language models parameters", "cats": ["cs.CL"], "n": 5, "sort": "relevance"},
+         note="\"Really big models\" -> scaling LLMs; cs.CL abstract search."),
+    result("call_1", search_response(["2005.14165", "2302.13971"], 1396)),
+    asst(
+        "For the scaling story:\n"
+        "- **GPT-3 / Language Models are Few-Shot Learners** (2005.14165) - 175B params; shows capability rises smoothly with scale and unlocks few-shot prompting.\n"
+        "- **LLaMA** (2302.13971) - the counterpoint: a smaller model trained on more tokens can beat a bigger one (compute-optimal training).\n\n"
+        "Read GPT-3 for 'scale helps', then LLaMA for 'how you spend the compute matters'."
+    ),
+])
+
+# 11. Casual "og GAN paper" + summary -> search then abstract.
+E([
+    usr("get me the og GAN paper and a quick summary"),
+    call("search", {"q": "ti:generative adversarial networks AND au:goodfellow", "n": 1},
+         note="\"OG GAN paper\" = Goodfellow's original; title + author filter."),
+    result("call_1", search_response(["1406.2661"], 2)),
+    call("execute", {"op": "abstract", "id": "1406.2661"}, cid="call_2",
+         note="Pulling the abstract for the quick summary they asked for."),
+    result("call_2", exec_one("1406.2661", "abstract", full_paper("1406.2661"))),
+    asst(
+        "**Generative Adversarial Networks** (1406.2661, Goodfellow et al., 2014). Quick version: train two networks against "
+        "each other - a *generator* that fabricates samples and a *discriminator* that tries to tell fake from real. As the "
+        "discriminator gets better, it pushes the generator to produce data indistinguishable from the real distribution. "
+        "That adversarial game is the whole trick."
+    ),
+])
+
+# 12. Recency on SSMs as transformer alternative.
+E([
+    usr("find recent work on state space models as an alternative to transformers"),
+    call("search", {"q": "abs:state space model sequence modeling", "cats": ["cs.LG"], "n": 4, "sort": "date"},
+         note="\"Recent\" -> sort by date; SSMs as a transformer alternative -> cs.LG."),
+    result("call_1", search_response(["2312.00752"], 143)),
+    asst("Top recent hit: **Mamba** (2312.00752, Gu & Dao, 2023). It uses a *selective* state-space model to get linear-time sequence modeling with content-based gating, matching or beating Transformers on several modalities with faster inference - the most cited transformer alternative right now."),
+])
+
+# 13. Multilingual speech -> infer eess.AS/cs.CL.
+E([
+    usr("got anything on speech recognition that handles a bunch of languages?"),
+    call("search", {"q": "abs:multilingual speech recognition", "cats": ["eess.AS", "cs.CL"], "n": 4, "sort": "relevance"},
+         note="Speech recognition across languages -> eess.AS + cs.CL, abstract term multilingual."),
+    result("call_1", search_response(["2212.04356"], 219)),
+    asst("That's **Whisper / Robust Speech Recognition via Large-Scale Weak Supervision** (2212.04356). Trained on 680k hours of multilingual, multitask audio, it transcribes and translates across many languages zero-shot and is notably robust to accents and noise."),
+])
+
+# 14. "i'm building a recommender" -> GNN.
+E([
+    usr("im building a recommender system and want to learn graph neural networks, find me a good starting paper"),
+    call("search", {"q": "abs:graph neural network semi-supervised classification", "cats": ["cs.LG"], "n": 3, "sort": "relevance"},
+         note="GNN foundations -> cs.LG; the GCN paper is the standard entry point."),
+    result("call_1", search_response(["1609.02907"], 904)),
+    asst("Best starting point: **Semi-Supervised Classification with Graph Convolutional Networks** (1609.02907, Kipf & Welling). It defines the GCN layer - a simple, scalable convolution that operates directly on graph structure - and it's the foundation most recommender/GNN work builds on."),
+])
+
+# 15. Story-style request -> title search.
+E([
+    usr("find the deepmind paper where they got an AI to play atari with reinforcement learning"),
+    call("search", {"q": "ti:atari reinforcement learning", "n": 2, "sort": "relevance"},
+         note="Specific result described -> title search for the Atari RL paper."),
+    result("call_1", search_response(["1312.5602"], 7)),
+    asst("That's **Playing Atari with Deep Reinforcement Learning** (1312.5602, Mnih et al., 2013) - the DQN paper. It learned control policies straight from raw pixels using Q-learning with a convolutional net, across several Atari 2600 games."),
+])
+
+# 16. "solid policy gradient method".
+E([
+    usr("whats a solid policy gradient method for RL these days, find the paper"),
+    call("search", {"q": "ti:proximal policy optimization", "n": 2, "sort": "relevance"},
+         note="Most-used modern policy-gradient method is PPO; searching its title."),
+    result("call_1", search_response(["1707.06347"], 5)),
+    asst("**Proximal Policy Optimization (PPO)** (1707.06347, Schulman et al., 2017). It's the default workhorse policy-gradient method: a clipped surrogate objective keeps each update from moving the policy too far, giving you most of TRPO's stability with far less complexity."),
+])
+
+# 17. Compound "X domain for Y purpose to Z effect": contrastive image-text for zero-shot.
+E([
+    usr("find papers on learning from images and text together so you can classify stuff zero-shot"),
+    call("search", {"q": "abs:contrastive image text zero-shot transfer", "cats": ["cs.CV"], "n": 4, "sort": "relevance"},
+         note="Domain = joint image-text learning; purpose = zero-shot classification -> cs.CV, contrastive + zero-shot terms."),
+    result("call_1", search_response(["2103.00020"], 540)),
+    asst(
+        "**CLIP / Learning Transferable Visual Models From Natural Language Supervision** (2103.00020) is exactly this. It "
+        "contrastively learns to match images with their captions over 400M pairs; because the label space is just text, "
+        "you get **zero-shot** classification - describe the classes in words and CLIP scores each image against them, no "
+        "task-specific training."
+    ),
+])
+
+# 18. "heard there's a big model" -> title search.
+E([
+    usr("heard there's some big model that can segment basically anything in an image, find it for me"),
+    call("search", {"q": "ti:segment anything", "n": 2, "sort": "relevance"},
+         note="Described as a 'segment anything' model -> title search."),
+    result("call_1", search_response(["2304.02643"], 11)),
+    asst("That's **Segment Anything (SAM)** (2304.02643, Kirillov et al., 2023). It's a *promptable* segmentation model trained on 1B+ masks; you give it points/boxes/text-like prompts and it segments arbitrary objects, generalizing zero-shot to new image types."),
+])
+
+# 19. "without retraining everything" -> PEFT/LoRA.
+E([
+    usr("find me work on fine-tuning huge models without having to retrain the whole thing"),
+    call("search", {"q": "abs:parameter-efficient fine-tuning low-rank adaptation", "cats": ["cs.CL", "cs.LG"], "n": 4, "sort": "relevance"},
+         note="\"Without retraining everything\" = parameter-efficient fine-tuning -> LoRA and friends."),
+    result("call_1", search_response(["2106.09685"], 396)),
+    asst("The go-to is **LoRA: Low-Rank Adaptation** (2106.09685). You freeze the pretrained weights and train only small low-rank update matrices injected into each layer - orders of magnitude fewer trainable parameters, and you can merge the update back in so there's no extra inference cost."),
+])
+
+# 20. "normalizing activations to train faster".
+E([
+    usr("papers on normalizing the activations to make deep nets train faster"),
+    call("search", {"q": "ti:batch normalization", "n": 2, "sort": "relevance"},
+         note="\"Normalizing activations for faster training\" -> Batch Normalization."),
+    result("call_1", search_response(["1502.03167"], 88)),
+    asst("**Batch Normalization** (1502.03167, Ioffe & Szegedy). It normalizes each layer's inputs per mini-batch to reduce 'internal covariate shift', which lets you use much higher learning rates, makes initialization less finicky, and has a mild regularizing effect."),
+])
+
+# 21. Vague compare-the-approaches -> search then batch abstracts then synthesize.
+E([
+    usr("compare the main ways people get transformers to handle really long sequences"),
+    call("search", {"q": "abs:long sequence efficient attention", "cats": ["cs.LG"], "n": 6, "sort": "relevance"},
+         note="Cross-cutting question -> first gather the main long-sequence approaches."),
+    result("call_1", search_response(["2205.14135", "2312.00752", "2009.06732"], 661)),
+    call("execute", [
+        {"op": "abstract", "id": "2205.14135"},
+        {"op": "abstract", "id": "2312.00752"},
+    ], cid="call_2", note="Pulling the two contrasting approaches' abstracts to compare directly."),
+    result("call_2", [
+        exec_one("2205.14135", "abstract", full_paper("2205.14135")),
+        exec_one("2312.00752", "abstract", full_paper("2312.00752")),
+    ]),
+    asst(
+        "Three broad strategies for long sequences:\n"
+        "- **Keep attention, make it cheaper on hardware** - **FlashAttention** (2205.14135): exact attention, but IO-aware tiling slashes memory traffic so you can run longer contexts.\n"
+        "- **Replace attention** - **Mamba** (2312.00752): a selective state-space model that's *linear* in sequence length instead of quadratic.\n"
+        "- **Survey of approximations** - **Efficient Transformers: A Survey** (2009.06732): sparse/low-rank/kernelized attention variants if you want the menu.\n\n"
+        "So it's roughly: optimize exact attention vs. swap it for a linear-time model vs. approximate it."
+    ),
+])
+
+# 22. Direct named ask, still casual.
+E([
+    usr("find the word2vec paper"),
+    call("search", {"q": "ti:efficient estimation word representations vector space", "n": 1},
+         note="word2vec's actual title; searching for it directly."),
+    result("call_1", search_response(["1301.3781"], 2)),
+    asst("Here it is: **Efficient Estimation of Word Representations in Vector Space** (1301.3781, Mikolov et al., 2013) - the word2vec paper, introducing the CBOW and skip-gram architectures for cheap, high-quality word embeddings."),
+])
+
+# 23. Compound + recency + purpose: alignment for a safety project.
+E([
+    usr("i need recent papers on aligning chatbots to be helpful and not harmful, its for a safety project"),
+    call("search", {"q": "abs:alignment helpful harmless human feedback", "cats": ["cs.CL"], "n": 6, "sort": "date"},
+         note="Purpose = LLM safety/alignment; 'recent' -> sort by date; cs.CL."),
+    result("call_1", search_response(["2307.09288", "2305.18290", "2203.02155"], 503)),
+    asst(
+        "For a safety/alignment project, recent-first:\n"
+        "- **Llama 2** (2307.09288) - has a substantial safety-tuning section (helpfulness vs. harmlessness reward models, red-teaming).\n"
+        "- **DPO** (2305.18290) - a stable, simple way to optimize a model toward preferred (e.g. harmless) responses.\n"
+        "- **InstructGPT** (2203.02155) - the foundational RLHF alignment recipe everything here descends from.\n\n"
+        "Llama 2's safety section is the most directly applied; want me to retrieve it?"
+    ),
+])
+
+# 24. "modern position encodings".
+E([
+    usr("what do i read to get how modern position encodings work in transformers"),
+    call("search", {"q": "abs:rotary position embedding transformer", "cats": ["cs.CL", "cs.LG"], "n": 3, "sort": "relevance"},
+         note="\"Modern position encodings\" -> rotary embeddings (RoPE) is the current standard."),
+    result("call_1", search_response(["2104.09864"], 207)),
+    asst("Read **RoFormer / Rotary Position Embedding** (2104.09864). RoPE encodes a token's absolute position by *rotating* its embedding by a position-dependent angle; because rotations compose, the attention score ends up depending only on the relative offset between tokens. It's the position scheme used in most modern LLMs (LLaMA, etc.)."),
+])
+
+# 25. "the sparse model thing".
+E([
+    usr("get me something on mixture of experts, the sparse model thing"),
+    call("search", {"q": "abs:sparse mixture of experts language model", "cats": ["cs.LG", "cs.CL"], "n": 3, "sort": "relevance"},
+         note="\"Sparse MoE\" -> sparse mixture-of-experts LMs."),
+    result("call_1", search_response(["2401.04088"], 156)),
+    asst("**Mixtral of Experts** (2401.04088) is the clearest modern example. Each layer has 8 expert feed-forward blocks and a router picks 2 per token - so a token can draw on 47B parameters while only ~13B are active during inference. That's the 'sparse' part: most experts sit idle for any given token."),
+])
+
+# 26. Find + break down the math (deep read).
+E([
+    usr("find the original transformer paper and break down the attention math for me"),
+    call("search", {"q": "ti:\"attention is all you need\"", "n": 1},
+         note="Locate the exact paper before reading it."),
+    result("call_1", search_response(["1706.03762"], 1)),
+    call("retrieve_paper", {"paper_id": "1706.03762", "segmentation_k": 1.2}, cid="call_2",
+         note="Retrieving with structure so I can quote the attention definition accurately."),
+    result("call_2", prepared(
         "1706.03762", "html",
         [
-            "The Transformer uses stacked self-attention and point-wise fully connected layers for both the encoder and decoder.",
-            "Scaled dot-product attention computes softmax(QK^T / sqrt(d_k)) V; multi-head attention runs h of these in parallel.",
+            "Scaled dot-product attention computes Attention(Q,K,V) = softmax(QK^T / sqrt(d_k)) V.",
+            "Multi-head attention runs h attention functions in parallel on projected queries/keys/values, then concatenates and projects the results.",
         ],
-        pruned_md="# Attention Is All You Need\n\n## Model Architecture\n\n...",
+        pruned_md="# Attention Is All You Need\n\n## Attention\n\n...",
         parents=["Model Architecture", "Model Architecture"],
-        clusters=["Encoder and Decoder Stacks", "Attention"])),
+        clusters=["Scaled Dot-Product Attention", "Multi-Head Attention"])),
     asst(
-        "Read it with hierarchical structure preserved. Each chunk now carries its structural parent, e.g. "
-        "*Model Architecture -> Encoder and Decoder Stacks* and *Model Architecture -> Attention*. Key points: the "
-        "Transformer stacks self-attention + feed-forward layers; attention is scaled dot-product, "
-        "softmax(QK^T/sqrt(d_k))V, run as h parallel heads. The `Context:` prefix on each chunk tells you where it "
-        "sits in the paper's hierarchy."
+        "Paper is **Attention Is All You Need** (1706.03762). The math, from the actual text:\n\n"
+        "**Scaled dot-product attention**: `Attention(Q,K,V) = softmax(QKᵀ / √d_k) · V`. You score every query against "
+        "every key via dot products, divide by √d_k (so large dimensions don't blow up the softmax), turn scores into "
+        "weights with softmax, and take the weighted sum of the values.\n\n"
+        "**Multi-head attention**: do that h times in parallel on different learned projections of Q/K/V, concatenate the "
+        "h outputs, and project once more. Multiple heads let the model attend to different relationships at once."
     ),
 ])
 
-# 10. Retrieve with custom chunking.
+# 27. "who cites it" -> search then citations.
 E([
-    usr("Retrieve 1512.03385 but use small 1500-character chunks with 100 overlap - I'm feeding it to a small-context model."),
-    call("retrieve_paper", {"paper_id": "1512.03385", "chunk_chars": 1500, "chunk_overlap": 100},
-         note="Retrieving ResNet with smaller chunks for a small-context model."),
-    result("call_1", prepared(
-        "1512.03385", "html",
-        [
-            "Deeper neural networks are more difficult to train. We present a residual learning framework to ease training of networks substantially deeper than before.",
-            "We explicitly reformulate the layers as learning residual functions F(x) = H(x) - x with reference to the layer inputs, instead of learning unreferenced functions H(x).",
-        ],
-        pruned_md="# Deep Residual Learning...\n\n...")),
-    asst("Done - 1512.03385 (ResNet) retrieved as 1500-char chunks (overlap 100), HTML source. The thesis: reformulate layers to learn a residual F(x)=H(x)-x rather than the full mapping, which makes very deep nets trainable. Ready for the small-context model."),
-])
-
-# 11. Retrieve keeping references.
-E([
-    usr("Get me 2005.11401 and DON'T strip the references - I want to see what they cited."),
-    call("retrieve_paper", {"paper_id": "2005.11401", "prune_references": False},
-         note="Setting prune_references=false to keep the bibliography."),
-    result("call_1", prepared(
-        "2005.11401", "html",
-        [
-            "We introduce RAG, combining a pretrained seq2seq generator with a dense retriever over a Wikipedia index.",
-            "## References\n[1] Karpukhin et al. Dense Passage Retrieval for Open-Domain QA. 2020.\n[2] Vaswani et al. Attention Is All You Need. 2017.",
-        ],
-        pruned_md="...# References\n[1] Karpukhin et al. ...\n[2] Vaswani et al. ...")),
-    asst(
-        "Kept the references in. RAG (2005.11401) cites, among others, Dense Passage Retrieval (Karpukhin et al., 2020) "
-        "and Attention Is All You Need (Vaswani et al., 2017). With pruning disabled, the bibliography stays in the "
-        "chunked output so you can trace its sources."
-    ),
-])
-
-# 12. ID normalization (arxiv: prefix + version suffix).
-E([
-    usr("Read arxiv:1706.03762v7 for me."),
-    call("retrieve_paper", {"paper_id": "arxiv:1706.03762v7"},
-         note="The server normalizes the 'arxiv:' prefix and version suffix."),
-    result("call_1", prepared(
-        "1706.03762", "html",
-        ["The Transformer is the first sequence transduction model based entirely on attention."],
-        pruned_md="# Attention Is All You Need\n\n...")),
-    asst("Retrieved it - the `arxiv:` prefix and `v7` suffix were normalized to the base id 1706.03762 automatically. It's the Transformer paper; the content is chunked and ready."),
-])
-
-# 13. Two-step: search to resolve an id, then retrieve.
-E([
-    usr("Can you get me the full text of the BERT paper?"),
+    usr("find what the BERT paper influenced - like who cites it"),
     call("search", {"q": "ti:bert pre-training bidirectional transformers", "n": 1},
-         note="I don't have the id memorized - searching first so I don't guess it."),
+         note="Resolve BERT's id before asking for citations (don't guess the id)."),
     result("call_1", search_response(["1810.04805"], 1)),
-    call("retrieve_paper", {"paper_id": "1810.04805", "segmentation_k": 1.2}, cid="call_2",
-         note="Found id 1810.04805 - now retrieving the full text with structure."),
-    result("call_2", prepared(
-        "1810.04805", "html",
-        [
-            "BERT pretrains deep bidirectional representations using a masked language model objective plus next-sentence prediction.",
-            "Fine-tuning adds a single output layer on top of the pretrained model to achieve state of the art on many tasks.",
-        ],
-        pruned_md="# BERT\n\n...",
-        parents=["Approach", "Approach"],
-        clusters=["Pre-training BERT", "Fine-tuning BERT"])),
-    asst(
-        "Resolved the title to arXiv:1810.04805 and retrieved it. BERT pretrains with two objectives - a masked "
-        "language model and next-sentence prediction - producing deep bidirectional representations; downstream tasks "
-        "then just add one output layer for fine-tuning. I searched first rather than guessing the id."
-    ),
-])
-
-# ---- execute: abstract / download / citations / recs / retrieve / batch --- #
-
-# 14. execute abstract.
-E([
-    usr("Just give me the abstract of 2201.11903."),
-    call("execute", {"op": "abstract", "id": "2201.11903"},
-         note="Fetching metadata + abstract only."),
-    result("call_1", exec_one("2201.11903", "abstract", full_paper("2201.11903"))),
-    asst(
-        "**Chain-of-Thought Prompting Elicits Reasoning in Large Language Models** (2201.11903, Wei et al., 2022, cs.CL).\n\n"
-        "Abstract: generating a chain of thought - intermediate reasoning steps - markedly improves LLMs' complex-reasoning "
-        "ability, and this ability emerges naturally once models are large enough."
-    ),
-])
-
-# 15. execute download (full markdown).
-E([
-    usr("Download the full text of 1412.6980 as markdown."),
-    call("execute", {"op": "download", "id": "1412.6980"},
-         note="op=download returns the full paper as markdown text."),
-    result("call_1", exec_one("1412.6980", "download",
-        "# Adam: A Method for Stochastic Optimization\n\n## Abstract\nWe introduce Adam, an algorithm for "
-        "first-order gradient-based optimization...\n\n## 2. Algorithm\nWe compute biased first/second moment "
-        "estimates m_t and v_t, bias-correct them, and update parameters by m_hat / (sqrt(v_hat) + epsilon).")),
-    asst("Here's the full markdown for 1412.6980 (Adam). It opens with the abstract, then the algorithm: maintain exponential moving averages of the gradient (m_t) and its square (v_t), bias-correct both, and step by m_hat/(sqrt(v_hat)+epsilon). The complete text is in the tool output above."),
-])
-
-# 16. execute citations.
-E([
-    usr("What papers cite the original GPT-3 paper? Give me the top 5."),
-    call("execute", {"op": "citations", "id": "2005.14165", "limit": 5},
-         note="Fetching up to 5 citing papers via Semantic Scholar."),
-    result("call_1", exec_one("2005.14165", "citations", [
-        ss_paper("2203.02155", "Training language models to follow instructions with human feedback", ["Long Ouyang"], 2022),
-        ss_paper("2201.11903", "Chain-of-Thought Prompting Elicits Reasoning in Large Language Models", ["Jason Wei"], 2022),
-        ss_paper("2302.13971", "LLaMA: Open and Efficient Foundation Language Models", ["Hugo Touvron"], 2023),
-    ])),
-    asst(
-        "Papers citing GPT-3 (2005.14165) include:\n"
-        "1. InstructGPT - Training LMs to follow instructions with human feedback (2203.02155, 2022)\n"
-        "2. Chain-of-Thought Prompting (2201.11903, 2022)\n"
-        "3. LLaMA (2302.13971, 2023)\n\n"
-        "These build on or compare against GPT-3's few-shot paradigm."
-    ),
-])
-
-# 17. execute recs.
-E([
-    usr("Recommend papers similar to LoRA (2106.09685)."),
-    call("execute", {"op": "recs", "id": "2106.09685", "limit": 5},
-         note="Fetching similar-paper recommendations."),
-    result("call_1", exec_one("2106.09685", "recs", [
-        ss_paper("2104.09864", "RoFormer: Enhanced Transformer with Rotary Position Embedding", ["Jianlin Su"], 2021),
+    call("execute", {"op": "citations", "id": "1810.04805", "limit": 4}, cid="call_2",
+         note="Now fetch papers that cite BERT."),
+    result("call_2", exec_one("1810.04805", "citations", [
         ss_paper("1910.10683", "Exploring the Limits of Transfer Learning with a Unified Text-to-Text Transformer", ["Colin Raffel"], 2019),
-    ])),
-    asst(
-        "Recommendations similar to LoRA:\n"
-        "1. **RoFormer / RoPE** (2104.09864) - another lightweight architectural tweak to Transformers.\n"
-        "2. **T5** (1910.10683) - the transfer-learning backbone LoRA-style methods are often applied to.\n\n"
-        "If you want parameter-efficient-tuning neighbors specifically, I can refine the search."
-    ),
-])
-
-# 18. execute retrieve op (alternative to retrieve_paper).
-E([
-    usr("Use execute's retrieve op to prep 2010.11929 for reading."),
-    call("execute", {"op": "retrieve", "id": "2010.11929", "chunk_chars": 3000},
-         note="op=retrieve returns the same prepared/chunked content as retrieve_paper."),
-    result("call_1", exec_one("2010.11929", "retrieve", prepared(
-        "2010.11929", "html",
-        [
-            "We split an image into fixed-size patches, linearly embed each, add position embeddings, and feed the sequence to a standard Transformer encoder.",
-            "When pre-trained on large datasets, ViT matches or exceeds state-of-the-art CNNs while using fewer compute resources to train.",
-        ],
-        pruned_md="# An Image is Worth 16x16 Words\n\n..."))),
-    asst("Prepped 2010.11929 (ViT) via execute's retrieve op - 2 chunks, HTML source. ViT cuts an image into fixed patches, embeds them with positions, and runs a vanilla Transformer encoder; with enough pre-training it matches or beats top CNNs at lower training cost."),
-])
-
-# 19. execute batch (array) - several abstracts at once.
-E([
-    usr("Give me the abstracts of the three LLaMA-family papers: 2302.13971, 2307.09288, and the Mixtral one 2401.04088."),
-    call("execute", [
-        {"op": "abstract", "id": "2302.13971"},
-        {"op": "abstract", "id": "2307.09288"},
-        {"op": "abstract", "id": "2401.04088"},
-    ], note="Batching three abstract ops in a single execute call (array in `code`)."),
-    result("call_1", [
-        exec_one("2302.13971", "abstract", full_paper("2302.13971")),
-        exec_one("2307.09288", "abstract", full_paper("2307.09288")),
-        exec_one("2401.04088", "abstract", full_paper("2401.04088")),
-    ]),
-    asst(
-        "Batched all three:\n"
-        "- **LLaMA** (2302.13971): 7B-65B foundation models trained only on public data.\n"
-        "- **Llama 2** (2307.09288): 7B-70B pretrained + fine-tuned chat models.\n"
-        "- **Mixtral of Experts** (2401.04088): sparse MoE, 8 experts/layer, 2 active per token (47B total, ~13B active).\n\n"
-        "One execute call with an array handled all three at once."
-    ),
-])
-
-# 20. execute batch mixed ops on one paper.
-E([
-    usr("For the Transformer paper 1706.03762, I want both its abstract and the papers that cite it."),
-    call("execute", [
-        {"op": "abstract", "id": "1706.03762"},
-        {"op": "citations", "id": "1706.03762", "limit": 3},
-    ], note="Batching an abstract op and a citations op for the same paper."),
-    result("call_1", [
-        exec_one("1706.03762", "abstract", full_paper("1706.03762")),
-        exec_one("1706.03762", "citations", [
-            ss_paper("1810.04805", "BERT: Pre-training of Deep Bidirectional Transformers", ["Jacob Devlin"], 2018),
-            ss_paper("2005.14165", "Language Models are Few-Shot Learners", ["Tom B. Brown"], 2020),
-        ]),
-    ]),
-    asst(
-        "**Attention Is All You Need** (1706.03762, 2017) introduces the attention-only Transformer.\n\n"
-        "Highly-cited descendants include BERT (1810.04805, 2018) and GPT-3 (2005.14165, 2020) - both build directly on "
-        "the Transformer block. One batched call returned both the abstract and the citation list."
-    ),
-])
-
-# ---- hdrr: multi-paper synthesis (and graceful fallback) ------------------ #
-
-# 21. hdrr success across an index.
-E([
-    usr("Across the indexed reasoning papers, how does tree-of-thoughts differ from chain-of-thought?"),
-    call("hdrr", {"q": "tree of thoughts vs chain of thought reasoning strategy", "limit_docs": 4, "limit_chunks": 8},
-         note="Multi-paper question - using HDRR for document routing + scoped chunk retrieval."),
-    result("call_1", {
-        "query": "tree of thoughts vs chain of thought reasoning strategy",
-        "routed_documents": ["2201.11903", "2305.10601"],
-        "chunks": [
-            {"id": "2201.11903-2", "text": "Chain-of-thought prompting elicits a single linear sequence of intermediate reasoning steps before the final answer."},
-            {"id": "2305.10601-4", "text": "Tree of Thoughts maintains a tree of partial solutions (thoughts) and explores it with search, enabling lookahead and backtracking rather than one linear path."},
-        ],
-    }),
-    asst(
-        "HDRR routed to the two relevant papers and pulled the key chunks:\n\n"
-        "- **Chain-of-Thought** (2201.11903) produces a *single linear* sequence of reasoning steps, then answers.\n"
-        "- **Tree of Thoughts** (2305.10601) generalizes that into a *tree* of partial solutions explored with search, "
-        "adding lookahead and backtracking instead of committing to one path.\n\n"
-        "So ToT trades extra compute for the ability to explore and recover from bad intermediate steps."
-    ),
-])
-
-# 22. hdrr with tuned limits.
-E([
-    usr("Summarize how the indexed papers approach parameter-efficient fine-tuning. Keep it tight - just route to the 3 best docs."),
-    call("hdrr", {"q": "parameter efficient fine-tuning low-rank adaptation", "limit_docs": 3, "limit_chunks": 6},
-         note="Tightening limit_docs to 3 for a focused synthesis."),
-    result("call_1", {
-        "query": "parameter efficient fine-tuning low-rank adaptation",
-        "routed_documents": ["2106.09685"],
-        "chunks": [
-            {"id": "2106.09685-1", "text": "LoRA freezes pretrained weights and learns low-rank update matrices, cutting trainable parameters by up to 10,000x with no added inference latency."},
-        ],
-    }),
-    asst("With limit_docs=3, HDRR routed to a single strongly-relevant doc: **LoRA** (2106.09685). Its approach to parameter-efficient fine-tuning is to freeze the base weights and train only small low-rank update matrices - drastically fewer trainable parameters and no extra inference latency, since the update can be merged back into the weights."),
-])
-
-# 23. hdrr fallback when embedded-db isn't enabled.
-E([
-    usr("Across the literature, how do RAG and T5 differ in how they bring in external knowledge?"),
-    call("hdrr", {"q": "retrieval augmented generation vs T5 external knowledge", "limit_docs": 5, "limit_chunks": 10},
-         note="Trying HDRR first for the cross-paper question."),
-    result("call_1", {"error": "embedded-db feature not enabled"}),
-    call("search", {"q": "abs:retrieval augmented generation OR ti:text-to-text transfer transformer", "n": 4, "sort": "relevance"},
-         cid="call_2", note="HDRR needs the embedded-db index, which isn't built here. Falling back to search + targeted abstracts."),
-    result("call_2", search_response(["2005.11401", "1910.10683"], 410)),
-    call("execute", [
-        {"op": "abstract", "id": "2005.11401"},
-        {"op": "abstract", "id": "1910.10683"},
-    ], cid="call_3", note="Pulling both abstracts to compare directly."),
-    result("call_3", [
-        exec_one("2005.11401", "abstract", full_paper("2005.11401")),
-        exec_one("1910.10683", "abstract", full_paper("1910.10683")),
-    ]),
-    asst(
-        "HDRR wasn't available (the server's embedded-db index isn't enabled in this build), so I fell back to "
-        "search + abstracts:\n\n"
-        "- **RAG** (2005.11401) brings in knowledge *non-parametrically*: a neural retriever fetches passages from an "
-        "external Wikipedia index at inference time and conditions generation on them.\n"
-        "- **T5** (1910.10683) stores everything *parametrically* - all knowledge lives in the model weights learned "
-        "during text-to-text pre-training; there's no external lookup.\n\n"
-        "So the core difference is external retrieval vs. baked-in parameters. If you build the index, HDRR would do "
-        "this routing in one call."
-    ),
-])
-
-# 24. hdrr empty routing -> guide to ingest first.
-E([
-    usr("Use HDRR to summarize the indexed papers on protein structure prediction."),
-    call("hdrr", {"q": "protein structure prediction folding", "limit_docs": 5},
-         note="Querying the index for protein-structure papers."),
-    result("call_1", {
-        "query": "protein structure prediction folding",
-        "routed_documents": [],
-        "chunks": [],
-        "message": "No documents routed in Stage 1.",
-    }),
-    asst(
-        "HDRR routed zero documents - the index doesn't contain anything on protein structure prediction yet "
-        "(HDRR only searches papers that have already been retrieved/ingested). Two options:\n"
-        "1. I can `search` arXiv (e.g. cat:q-bio.BM) to find candidate papers, then `retrieve_paper` them to populate "
-        "the index, after which HDRR will work.\n"
-        "2. Or, if you have specific arXiv IDs, give them to me and I'll ingest those directly.\n\n"
-        "Want me to start with a search?"
-    ),
-])
-
-# ---- multi-step agentic chains -------------------------------------------- #
-
-# 25. Full chain: search -> retrieve (with segmentation) -> synthesize.
-E([
-    usr("I keep hearing about 'rotary position embeddings'. Find the paper and explain the core idea from the actual text."),
-    call("search", {"q": "ti:rotary position embedding", "n": 2, "sort": "relevance"},
-         note="First, locate the RoPE paper."),
-    result("call_1", search_response(["2104.09864"], 3)),
-    call("retrieve_paper", {"paper_id": "2104.09864", "segmentation_k": 1.2}, cid="call_2",
-         note="Retrieving RoFormer with structure to read the method."),
-    result("call_2", prepared(
-        "2104.09864", "html",
-        [
-            "RoPE encodes absolute position by multiplying token embeddings with a rotation matrix whose angle depends on position.",
-            "Because rotations compose additively, the dot product between two rotated vectors depends only on their relative offset, injecting relative-position information directly into self-attention.",
-        ],
-        pruned_md="# RoFormer\n\n## Rotary Position Embedding\n\n...",
-        parents=["Proposed Approach", "Proposed Approach"],
-        clusters=["Rotary Position Embedding", "Properties"])),
-    asst(
-        "The paper is **RoFormer** (arXiv:2104.09864). From its method text: RoPE multiplies each token's embedding by "
-        "a *rotation matrix* whose angle is a function of the token's absolute position. The trick is that rotations "
-        "compose, so the attention dot product between two tokens ends up depending only on their *relative* distance. "
-        "That gives you absolute-position encoding that automatically expresses relative position inside self-attention "
-        "- no extra learned position table, and it extrapolates better to longer sequences."
-    ),
-])
-
-# 26. Compare two papers via batched abstracts.
-E([
-    usr("Compare how ResNet and ViT approach image recognition."),
-    call("execute", [
-        {"op": "abstract", "id": "1512.03385"},
-        {"op": "abstract", "id": "2010.11929"},
-    ], note="Grabbing both abstracts in one batched call to compare."),
-    result("call_1", [
-        exec_one("1512.03385", "abstract", full_paper("1512.03385")),
-        exec_one("2010.11929", "abstract", full_paper("2010.11929")),
-    ]),
-    asst(
-        "- **ResNet** (1512.03385) stays convolutional but adds *residual connections* (learning F(x)=H(x)-x), which "
-        "lets you train very deep CNNs without degradation.\n"
-        "- **ViT** (2010.11929) drops convolution: it splits the image into patches and feeds them to a standard "
-        "*Transformer* encoder, beating CNNs once pre-trained on enough data.\n\n"
-        "In short: ResNet makes depth trainable within the CNN paradigm; ViT replaces the paradigm with attention."
-    ),
-])
-
-# 27. Literature-landscape: broad search -> batch abstracts -> summarize.
-E([
-    usr("Give me a quick lay of the land on instruction tuning / RLHF for LLMs."),
-    call("search", {"q": "abs:instruction tuning human feedback RLHF", "cats": ["cs.CL"], "n": 3, "sort": "relevance"},
-         note="Broad discovery search in cs.CL."),
-    result("call_1", search_response(["2203.02155", "2005.14165"], 156)),
-    call("execute", [{"op": "abstract", "id": "2203.02155"}], cid="call_2",
-         note="Pulling the InstructGPT abstract as the anchor reference."),
-    result("call_2", exec_one("2203.02155", "abstract", full_paper("2203.02155"))),
-    asst(
-        "Quick landscape on instruction tuning / RLHF:\n"
-        "- The anchor is **InstructGPT** (2203.02155, Ouyang et al., 2022): collect human demonstrations + preference "
-        "comparisons, then fine-tune with RLHF so the model follows intent; a 1.3B InstructGPT was preferred over 175B GPT-3.\n"
-        "- Context: it builds on **GPT-3** (2005.14165), whose few-shot prompting motivated the need for better alignment.\n\n"
-        "Want me to retrieve InstructGPT's method section for the RLHF training loop details?"
-    ),
-])
-
-# 28. Find citing work, then deep-read one of them.
-E([
-    usr("Find a notable paper that cites the Transformer paper, then summarize that citing paper's contribution."),
-    call("execute", {"op": "citations", "id": "1706.03762", "limit": 3},
-         note="Step 1: who cites the Transformer paper?"),
-    result("call_1", exec_one("1706.03762", "citations", [
-        ss_paper("1810.04805", "BERT: Pre-training of Deep Bidirectional Transformers", ["Jacob Devlin"], 2018),
         ss_paper("2005.14165", "Language Models are Few-Shot Learners", ["Tom B. Brown"], 2020),
+        ss_paper("2106.09685", "LoRA: Low-Rank Adaptation of Large Language Models", ["Edward J. Hu"], 2021),
     ])),
-    call("execute", {"op": "abstract", "id": "1810.04805"}, cid="call_2",
-         note="Step 2: read BERT's abstract to summarize its contribution."),
-    result("call_2", exec_one("1810.04805", "abstract", full_paper("1810.04805"))),
     asst(
-        "A notable citing paper is **BERT** (1810.04805, Devlin et al., 2018). Its contribution: take the Transformer "
-        "encoder and pre-train it *bidirectionally* with a masked-language-model objective, so each token sees both "
-        "left and right context. Fine-tuned with a single extra layer, BERT set new state of the art on eleven NLP "
-        "tasks - establishing the pretrain-then-fine-tune recipe that dominated NLP afterward."
+        "BERT (1810.04805) is cited all over modern NLP. A few influential descendants:\n"
+        "- **T5** (1910.10683) - generalized the pretrain-finetune idea to text-to-text.\n"
+        "- **GPT-3** (2005.14165) - contrasts BERT's fine-tuning with few-shot prompting.\n"
+        "- **LoRA** (2106.09685) - parameter-efficient fine-tuning, often demoed on BERT-style models.\n\n"
+        "I resolved the title to the id by searching first rather than guessing it."
     ),
 ])
 
-# 29. Recommendations -> drill into one rec.
+# 28. "i keep seeing X everywhere" -> find originator + explain.
 E([
-    usr("Find me something similar to the chain-of-thought paper, then give me that recommendation's abstract."),
-    call("execute", {"op": "recs", "id": "2201.11903", "limit": 3},
-         note="Step 1: get recommendations similar to CoT."),
-    result("call_1", exec_one("2201.11903", "recs", [
-        ss_paper("2305.10601", "Tree of Thoughts: Deliberate Problem Solving with Large Language Models", ["Shunyu Yao"], 2023),
-    ])),
-    call("execute", {"op": "abstract", "id": "2305.10601"}, cid="call_2",
-         note="Step 2: fetch the abstract of the top recommendation."),
-    result("call_2", exec_one("2305.10601", "abstract", full_paper("2305.10601"))),
+    usr("i keep seeing 'RAG' everywhere, find the paper that started it and tell me what it actually is"),
+    call("search", {"q": "ti:retrieval-augmented generation knowledge-intensive", "n": 1},
+         note="Find the originating RAG paper by title."),
+    result("call_1", search_response(["2005.11401"], 3)),
+    call("execute", {"op": "abstract", "id": "2005.11401"}, cid="call_2",
+         note="Grab its abstract to explain the concept accurately."),
+    result("call_2", exec_one("2005.11401", "abstract", full_paper("2005.11401"))),
     asst(
-        "The top recommendation is **Tree of Thoughts** (2305.10601, Yao et al., 2023). Abstract in brief: ToT "
-        "generalizes chain-of-thought into a searchable *tree* of intermediate \"thoughts\", letting the model do "
-        "lookahead and backtracking to deliberately solve problems where a single linear chain would fail."
+        "The originating paper is **Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks** (2005.11401, Lewis "
+        "et al., 2020). What RAG actually is: instead of relying only on what's baked into the model's weights, a neural "
+        "*retriever* fetches relevant passages from an external index (Wikipedia in the paper) at query time, and the "
+        "generator conditions its answer on those passages. That's why people bolt 'RAG' onto LLMs to ground answers in "
+        "your own documents."
     ),
 ])
 
-# 30. Decide hdrr vs retrieve based on scope.
+# 29. "theory papers... the adam optimizer kind".
 E([
-    usr("I have three papers indexed and want to know what they collectively say about scaling laws. One call, please."),
-    call("hdrr", {"q": "scaling laws model size data compute", "limit_docs": 3, "limit_chunks": 9},
-         note="Collective/cross-paper question over the index - HDRR is the right single call (not three retrieve_paper calls)."),
+    usr("find theory-ish papers on optimization for deep learning, like the adam optimizer kind of thing"),
+    call("search", {"q": "abs:stochastic optimization adaptive gradient", "cats": ["cs.LG"], "n": 3, "sort": "relevance"},
+         note="Optimization methods for DL -> cs.LG; Adam-style adaptive methods."),
+    result("call_1", search_response(["1412.6980"], 612)),
+    asst("The canonical one is **Adam: A Method for Stochastic Optimization** (1412.6980, Kingma & Ba). It keeps running estimates of the gradient's first and second moments, bias-corrects them, and adapts a per-parameter step size - which is why it's the default optimizer for most deep nets."),
+])
+
+# 30. Compound: compress to 4-bit for consumer GPUs.
+E([
+    usr("find research on compressing LLMs down to like 4-bit so they run on consumer gpus"),
+    call("search", {"q": "abs:post-training quantization large language model 4-bit", "cats": ["cs.LG", "cs.CL"], "n": 3, "sort": "relevance"},
+         note="Goal = low-bit quantization for consumer hardware -> GPTQ-style work."),
+    result("call_1", search_response(["2210.17323"], 174)),
+    asst("**GPTQ** (2210.17323, Frantar et al.) is the one. It's a one-shot post-training quantization method using approximate second-order info to push GPT-scale weights down to 3-4 bits with negligible accuracy loss - which is exactly what makes big models fit on a single consumer GPU. Tools like the 4-bit GGUF/GPTQ checkpoints trace back to this."),
+])
+
+# ---- multi-paper synthesis from a vague ask -------------------------------- #
+
+# 31. hdrr over an indexed set, vague phrasing.
+E([
+    usr("across those agent papers we pulled, how do they actually get the model to take real actions?"),
+    call("hdrr", {"q": "how language model agents take actions tool use", "limit_docs": 4, "limit_chunks": 8},
+         note="Cross-paper question over the index -> HDRR, not separate retrieves."),
     result("call_1", {
-        "query": "scaling laws model size data compute",
-        "routed_documents": ["2005.14165", "2302.13971", "1910.10683"],
+        "query": "how language model agents take actions tool use",
+        "routed_documents": ["2302.04761", "2210.03629"],
         "chunks": [
-            {"id": "2005.14165-7", "text": "Performance improves smoothly and predictably as we scale parameters, data, and compute; few-shot ability strengthens with size."},
-            {"id": "2302.13971-3", "text": "Smaller models trained on more tokens can outperform larger models trained on fewer, motivating compute-optimal training."},
+            {"id": "2302.04761-2", "text": "Toolformer inserts API calls (e.g. a calculator or search query) into the text during training and learns, from whether the call lowers loss, when to invoke each tool."},
+            {"id": "2210.03629-5", "text": "ReAct prompts the model to emit alternating Thought and Action tokens; Actions are executed against an environment (e.g. a search API) and the Observation is fed back in."},
         ],
     }),
     asst(
-        "One HDRR call routed across all three indexed papers. Collectively on scaling:\n"
-        "- **GPT-3** (2005.14165): capability improves smoothly and predictably with more parameters/data/compute, and "
-        "few-shot ability strengthens with scale.\n"
-        "- **LLaMA** (2302.13971): pushes the compute-optimal angle - a smaller model trained on *more tokens* can beat a "
-        "bigger one, so token budget matters as much as parameter count.\n\n"
-        "Net: scale helps predictably, but the parameter-vs-token allocation is itself a lever."
+        "HDRR routed to the two agent papers. They take actions differently:\n"
+        "- **Toolformer** (2302.04761) bakes it into *training*: it inserts candidate API calls into text and keeps the ones "
+        "that actually reduce loss, so the model learns when to call a tool.\n"
+        "- **ReAct** (2210.03629) does it at *inference*: the model emits alternating Thought/Action steps; each Action (e.g. "
+        "a search query) is run against the environment and the Observation is fed back before the next step.\n\n"
+        "So: learned-at-training vs. prompted-at-inference, but both hinge on executing an external call and conditioning on the result."
     ),
 ])
 
-# ---- edge cases & robustness ---------------------------------------------- #
-
-# 31. Empty results -> broaden the query.
+# 32. Vague "rundown" -> hdrr fallback (no embedded-db) -> search + batch.
 E([
-    usr("Search for 'quantum transformer attention for protein folding mixture of experts'."),
-    call("search", {"q": "quantum transformer attention protein folding mixture of experts", "n": 5, "sort": "relevance"},
-         note="Trying the full, very specific phrase first."),
+    usr("give me a rundown of how the big diffusion papers differ"),
+    call("hdrr", {"q": "diffusion models image synthesis differences", "limit_docs": 5, "limit_chunks": 10},
+         note="Multi-paper synthesis -> try HDRR first."),
+    result("call_1", {"error": "embedded-db feature not enabled"}),
+    call("search", {"q": "abs:diffusion image synthesis", "cats": ["cs.CV", "cs.LG"], "n": 4, "sort": "relevance"},
+         cid="call_2", note="HDRR needs the embedded-db index (not built here); falling back to search + abstracts."),
+    result("call_2", search_response(["2006.11239", "2112.10752"], 1820)),
+    call("execute", [
+        {"op": "abstract", "id": "2006.11239"},
+        {"op": "abstract", "id": "2112.10752"},
+    ], cid="call_3", note="Pulling both abstracts to contrast them."),
+    result("call_3", [
+        exec_one("2006.11239", "abstract", full_paper("2006.11239")),
+        exec_one("2112.10752", "abstract", full_paper("2112.10752")),
+    ]),
+    asst(
+        "HDRR wasn't available (the server's embedded-db index isn't built here), so I searched + compared abstracts:\n"
+        "- **DDPM** (2006.11239) - establishes the diffusion formulation, running the noising/denoising process directly in "
+        "*pixel space*. Great quality, but expensive at high resolution.\n"
+        "- **Latent Diffusion** (2112.10752) - moves that same process into a compressed *latent* space from a pretrained "
+        "autoencoder, cutting compute by a lot; it's what made Stable-Diffusion-scale generation practical.\n\n"
+        "Core difference: where the diffusion happens (pixels vs. latents) and therefore the cost. If you build the index, "
+        "HDRR would do this comparison in a single call."
+    ),
+])
+
+# 33. Nonsense-niche request -> empty results -> broaden -> ask for the key concept.
+E([
+    usr("find me papers on quantum graph cryptography for federated blockchains"),
+    call("search", {"q": "abs:quantum graph cryptography federated blockchain", "n": 5, "sort": "relevance"},
+         note="Trying the full phrase as given first."),
     result("call_1", search_response([], 0)),
-    call("search", {"q": "abs:transformer protein structure", "cats": ["q-bio.BM", "cs.LG"], "n": 5, "sort": "relevance"},
-         cid="call_2", note="Zero results - broadening to the core concepts and adding category filters."),
+    call("search", {"q": "abs:graph neural network blockchain", "cats": ["cs.LG", "cs.CR"], "n": 5, "sort": "relevance"},
+         cid="call_2", note="Zero hits - dropping the least-standard terms and broadening to the plausible core (graphs + blockchain)."),
     result("call_2", search_response([], 0)),
     asst(
-        "The very specific phrase returned 0 results, and even a broadened `abs:transformer protein structure` search "
-        "(in q-bio.BM/cs.LG) came back empty in this index. That combination of terms may be too niche or the wording "
-        "doesn't match how authors phrase it. Could you tell me which single concept matters most - e.g. \"protein "
-        "structure prediction\" vs \"mixture of experts\" - so I can target a productive search?"
+        "Both the full phrase and a broadened `graph neural network blockchain` search (cs.LG/cs.CR) returned nothing - that "
+        "exact combination doesn't seem to exist as a research thread, and stringing four niche terms together is probably "
+        "over-constraining it. Which single piece is the real target: the *quantum* angle, *graph* methods, *cryptography*, "
+        "or *blockchain/federated* systems? Tell me the one that matters and I'll search productively around it."
     ),
 ])
 
-# 32. User supplies a title only -> must search, never guess the id.
+# 34. Vague-but-conceptual -> answer directly, offer to fetch (calibration).
 E([
-    usr("Get the citations for the paper titled 'Deep Residual Learning for Image Recognition'."),
-    call("search", {"q": "ti:\"deep residual learning for image recognition\"", "n": 1},
-         note="I won't guess the arXiv id from a title - searching to resolve it first."),
-    result("call_1", search_response(["1512.03385"], 1)),
-    call("execute", {"op": "citations", "id": "1512.03385", "limit": 5}, cid="call_2",
-         note="Resolved to 1512.03385 - now fetching its citations."),
-    result("call_2", exec_one("1512.03385", "citations", [
-        ss_paper("2010.11929", "An Image is Worth 16x16 Words", ["Alexey Dosovitskiy"], 2020),
+    usr("real quick, what even is a transformer"),
+    asst(
+        "A transformer is a neural network architecture built around *self-attention*: every token looks at every other "
+        "token and decides how much to weight each one, so context flows directly between positions instead of through "
+        "recurrence. Stack those attention layers with feed-forward layers and you get the backbone behind modern LLMs, ViT, "
+        "etc.\n\n"
+        "That's the gist - no lookup needed. If you want the primary source, say so and I'll grab *Attention Is All You Need* "
+        "(1706.03762) and walk through it."
+    ),
+])
+
+# 35. Title-only -> resolve via search, then citations.
+E([
+    usr("can you get the citations for 'Denoising Diffusion Probabilistic Models'"),
+    call("search", {"q": "ti:\"denoising diffusion probabilistic models\"", "n": 1},
+         note="Resolve the title to an id via search before fetching citations."),
+    result("call_1", search_response(["2006.11239"], 1)),
+    call("execute", {"op": "citations", "id": "2006.11239", "limit": 4}, cid="call_2",
+         note="Fetch the citing papers."),
+    result("call_2", exec_one("2006.11239", "citations", [
         ss_paper("2112.10752", "High-Resolution Image Synthesis with Latent Diffusion Models", ["Robin Rombach"], 2021),
+        ss_paper("2304.02643", "Segment Anything", ["Alexander Kirillov"], 2023),
     ])),
     asst(
-        "I resolved the title to **arXiv:1512.03385** (ResNet) via search rather than guessing the id, then fetched its "
-        "citations. Notable citing work: ViT (2010.11929) and Latent Diffusion Models (2112.10752) - both lean on "
-        "ResNet-style backbones or its deep-network insights."
+        "Resolved the title to **arXiv:2006.11239** and pulled its citations. Notable citing work includes **Latent "
+        "Diffusion Models** (2112.10752), which builds directly on DDPM, and broader vision systems like **Segment "
+        "Anything** (2304.02643). I searched to get the id rather than guessing it."
     ),
 ])
 
-# 33. Messy id with prefix + version inside execute.
+# 36. "a survey on X".
 E([
-    usr("What's the abstract of ArXiv:2005.14165v4?"),
-    call("execute", {"op": "abstract", "id": "ArXiv:2005.14165v4"},
-         note="The 'ArXiv:' prefix and 'v4' suffix are normalized to 2005.14165 server-side."),
-    result("call_1", exec_one("2005.14165", "abstract", full_paper("2005.14165"))),
+    usr("find me a survey paper on all the efficient transformer variants"),
+    call("search", {"q": "ti:efficient transformers survey", "n": 2, "sort": "relevance"},
+         note="They explicitly want a survey -> ti:survey on efficient transformers."),
+    result("call_1", search_response(["2009.06732"], 4)),
+    asst("**Efficient Transformers: A Survey** (2009.06732, Tay et al.) is exactly that - it organizes the 'X-former' landscape (sparse, low-rank, kernel-based, recurrence-augmented attention, etc.) into a taxonomy, so it's a good single map of the efficiency design space."),
+])
+
+# 37. "i loved X, find similar" -> recs.
+E([
+    usr("i loved the chain of thought paper, find me similar stuff"),
+    call("execute", {"op": "recs", "id": "2201.11903", "limit": 4},
+         note="\"Similar to a paper I liked\" -> recommendations for the CoT paper (2201.11903)."),
+    result("call_1", exec_one("2201.11903", "recs", [
+        ss_paper("2305.10601", "Tree of Thoughts: Deliberate Problem Solving with Large Language Models", ["Shunyu Yao"], 2023),
+        ss_paper("2210.03629", "ReAct: Synergizing Reasoning and Acting in Language Models", ["Shunyu Yao"], 2022),
+    ])),
     asst(
-        "**Language Models are Few-Shot Learners** (2005.14165, Brown et al., 2020). The id normalized from "
-        "`ArXiv:2005.14165v4` to the base `2005.14165`. Abstract: scaling to a 175B-parameter autoregressive model "
-        "(GPT-3) yields strong task-agnostic few-shot performance with no gradient updates - just in-context examples."
+        "If you liked Chain-of-Thought, the closest neighbors are:\n"
+        "- **Tree of Thoughts** (2305.10601) - turns the linear chain into a searchable tree with backtracking.\n"
+        "- **ReAct** (2210.03629) - adds *acting* to the reasoning so the model can verify steps against tools.\n\n"
+        "Both are direct extensions of the CoT idea. Want either in full?"
     ),
 ])
 
-# 34. Capping n at 50.
+# 38. Compound x/y/z: RL to fine-tune LMs for instruction following.
 E([
-    usr("Give me 200 papers on neural machine translation."),
-    call("search", {"q": "abs:neural machine translation", "n": 50, "sort": "relevance"},
-         note="arXiv search caps results at 50 per call, so requesting the max and noting pagination."),
+    usr("find papers on using reinforcement learning to fine-tune language models so they follow instructions better"),
+    call("search", {"q": "abs:reinforcement learning fine-tuning instruction following", "cats": ["cs.CL", "cs.LG"], "n": 5, "sort": "relevance"},
+         note="Domain = RL fine-tuning of LMs; purpose = better instruction following -> cs.CL/cs.LG."),
+    result("call_1", search_response(["2203.02155", "2305.18290"], 421)),
+    asst(
+        "Two papers cover this precisely:\n"
+        "- **InstructGPT** (2203.02155) - the original: collect human preference data, train a reward model, and fine-tune "
+        "with RL (PPO) so the model follows user intent. A 1.3B InstructGPT beat 175B GPT-3 on instruction following.\n"
+        "- **DPO** (2305.18290) - achieves the same preference alignment *without* the RL loop, optimizing the policy "
+        "directly from preference pairs - simpler and more stable to train.\n\n"
+        "InstructGPT for the RL approach, DPO for the lighter modern alternative."
+    ),
+])
+
+# ---- interface mechanics, still phrased as messy asks ---------------------- #
+
+# 39. Pagination from a casual "show me more".
+E([
+    usr("show me work on neural machine translation"),
+    call("search", {"q": "abs:neural machine translation", "n": 5, "sort": "relevance"},
+         note="Initial discovery search for NMT."),
     result("call_1", search_response(["1706.03762", "1910.10683"], 8800)),
-    asst(
-        "A single call is capped at 50 results, so I requested the maximum (there are ~8,800 matches total). Top of the "
-        "list includes Attention Is All You Need (1706.03762) and T5 (1910.10683). To go past 50, I can paginate with "
-        "`offset` (50, 100, ...). How many pages do you want?"
-    ),
+    asst("Top hits: **Attention Is All You Need** (1706.03762) and **T5** (1910.10683). There are ~8,800 matches total - want more?"),
+    usr("yeah these aint it, gimme the next batch"),
+    call("search", {"q": "abs:neural machine translation", "n": 5, "offset": 5, "sort": "relevance"},
+         cid="call_2", note="Advancing the page with offset=5 for the next batch."),
+    result("call_2", search_response(["2010.11929", "2009.06732"], 8800, start=5)),
+    asst("Next page brings up **ViT** (2010.11929) and **Efficient Transformers: A Survey** (2009.06732). I can keep paging (offset 10, 15, ...) or narrow it down with a year or a subtopic if the results are drifting off-target."),
 ])
 
-# ---- calibration: when NOT to call a tool --------------------------------- #
-
-# 35. Conceptual question - answer directly, no tool.
+# 40. ID with prefix + version -> normalization, casual phrasing.
 E([
-    usr("Quick conceptual question: what's the difference between precision and recall?"),
-    asst(
-        "Precision = TP / (TP + FP): of the items you flagged positive, how many actually are. Recall = TP / (TP + FN): "
-        "of all the real positives, how many you caught. Precision punishes false alarms; recall punishes misses. You "
-        "usually trade one for the other (the F1 score is their harmonic mean).\n\n"
-        "That's general ML knowledge, so no paper lookup needed - but if you want the source of a specific metric or a "
-        "paper that analyzes the trade-off, I can search arXiv."
-    ),
+    usr("pull up arxiv:1706.03762v7 for me real quick"),
+    call("retrieve_paper", {"paper_id": "arxiv:1706.03762v7"},
+         note="The 'arxiv:' prefix and 'v7' version suffix normalize to the base id server-side; passing it through as-is."),
+    result("call_1", prepared(
+        "1706.03762", "html",
+        ["The Transformer is the first sequence transduction model based entirely on attention, without recurrence or convolution."],
+        pruned_md="# Attention Is All You Need\n\n...")),
+    asst("Got it - the `arxiv:` prefix and `v7` suffix normalized to **1706.03762** automatically. It's the Transformer paper, retrieved and chunked. Want a section summarized?"),
 ])
 
-# 36. Out-of-scope request - explain the tool's boundary, no tool call.
+# 41. "dump 200 papers" -> 50-result cap + offer pagination.
 E([
-    usr("Can you summarize the PDF sitting in my Downloads folder?"),
-    asst(
-        "I can't reach your local filesystem - the arxiv-search tools only fetch papers *from arXiv*, either by arXiv "
-        "ID (e.g. 2106.09685) or by a search query. If that PDF is an arXiv paper, give me its ID or title and I'll "
-        "retrieve and summarize it for you. Otherwise this server can't open it."
-    ),
-])
-
-# 37. Reinforce the `code` envelope on a complex multi-field query.
-E([
-    usr("Find at most 8 papers, sorted newest-first, that mention 'long context' in the abstract, in cs.CL, submitted between 2023-06-01 and 2024-06-01."),
-    call("search", {
-        "q": "abs:long context",
-        "cats": ["cs.CL"],
-        "from": "2023-06-01",
-        "to": "2024-06-01",
-        "n": 8,
-        "sort": "date",
-    }, note="Packing every constraint into the single `code` JSON object: q, cats, from/to, n, sort."),
-    result("call_1", search_response(["2401.04088"], 73)),
-    asst(
-        "All constraints went into one `code` object (q=abs:long context, cats=[cs.CL], from/to date window, n=8, "
-        "sort=date). Within that 2023-06 to 2024-06 window the top date-sorted hit is **Mixtral of Experts** "
-        "(2401.04088, Jan 2024). There are 73 matches total if you want me to page through more."
-    ),
-])
-
-# 38. Disambiguate a vague reference using search results.
-E([
-    usr("Pull up 'the GPT paper'."),
-    call("search", {"q": "ti:language models AND au:brown", "n": 3, "sort": "relevance"},
-         note="\"The GPT paper\" is ambiguous - searching to surface the most likely candidate rather than guessing an id."),
-    result("call_1", search_response(["2005.14165"], 9)),
-    asst(
-        "\"The GPT paper\" is ambiguous (GPT-1/2/3/4 all exist), but the most-cited single match is **Language Models "
-        "are Few-Shot Learners** - the GPT-3 paper (arXiv:2005.14165, Brown et al., 2020). Is that the one you meant, "
-        "or did you want GPT-2 / InstructGPT / GPT-4? I'll retrieve whichever you confirm."
-    ),
+    usr("just dump like 200 papers on reinforcement learning on me"),
+    call("search", {"q": "abs:reinforcement learning", "cats": ["cs.LG"], "n": 50, "sort": "relevance"},
+         note="arXiv caps a single call at 50 results, so requesting the max and flagging pagination for the rest."),
+    result("call_1", search_response(["1312.5602", "1707.06347"], 41000)),
+    asst("Heads up: one call tops out at 50 results (there are ~41,000 RL matches in cs.LG), so I pulled the top 50 - led by **DQN** (1312.5602) and **PPO** (1707.06347). To go past 50 I page with `offset` (50, 100, ...). Want me to start paging, or narrow by subtopic/year so the first 50 are actually the right ones?"),
 ])
 
 # --------------------------------------------------------------------------- #

@@ -5,6 +5,16 @@ to drive the **arxiv-search MCP server** natively - i.e. to reach for
 `search` / `retrieve_paper` / `execute` / `hdrr` and call them with the exact
 wire format the server expects, without being told how each time.
 
+**Defining trait:** the user requests are deliberately *messy and
+underspecified* - "go find me research on X", "papers on X for Y purpose to Z
+effect", "whats the hot stuff in image generation lately", "the rlhf kind of
+thing". The model's job is to **interpret** the request and translate it into a
+precise query: domain words -> arXiv category (`vision` -> `cs.CV`, `speech` ->
+`eess.AS`, `RL` -> `cs.LG`), "recent/lately/these days" -> `sort: date`, and
+intent -> abstract field terms. Every tool-call turn carries a short note that
+makes that interpretation step explicit, so the model learns to reason from a
+vague ask to a structured call.
+
 - **Format:** OpenAI chat fine-tuning JSONL (one JSON object per line, with
   `messages`, `tools`, `parallel_tool_calls`).
 - **Interface taught:** the four MCP tools exposed by `crates/native/src/tool.rs`.
@@ -16,7 +26,7 @@ wire format the server expects, without being told how each time.
 
 | File | Purpose |
 |---|---|
-| `arxiv_mcp_sft.jsonl` | The dataset. 38 conversations, ready for SFT. |
+| `arxiv_mcp_sft.jsonl` | The dataset. 41 conversations, ready for SFT. |
 | `build_dataset.py` | Hand-curated examples + serialization + validation. Re-run to regenerate the JSONL. |
 | `README.md` | This file. |
 
@@ -66,12 +76,24 @@ server, so most examples reinforce it. The dataset also reinforces:
 | `execute` | one `Operation` or an **array** of them: `{op, id, limit, ...}` where `op` ∈ `abstract` \| `download` \| `citations` \| `recs` \| `retrieve` | `{id, op, result}` (or an array thereof) |
 | `hdrr` | `{q, limit_docs, limit_chunks}` | `{query, routed_documents[], chunks[]}` |
 
-Skills the conversations exercise: field-filtered discovery, category/date
-filtering, pagination via `offset`, hierarchical reads with `segmentation_k`,
-custom chunking, keeping references, batched `execute` arrays, citation/rec
-chains, multi-step `search -> retrieve` chains, multi-paper synthesis with
-`hdrr`, and calibration (answering directly when no tool is warranted, and
-declining out-of-scope requests).
+The set is **discovery-heavy** by design (tool-call mix: `search` 39,
+`execute` 7, `retrieve_paper` 3, `hdrr` 2), because the target behavior is
+"just go find papers off a poorly-structured instruction". Skills exercised:
+
+- inferring arXiv **category** filters from domain words, and `sort: date` from
+  recency cues;
+- field-filtered queries (`ti:` `au:` `abs:` `cat:`, `ANDNOT` exclusions);
+- resolving a **title or vague reference to an ID via `search`** instead of
+  guessing the ID;
+- multi-step chains: `search -> retrieve_paper` (deep read) and
+  `search -> execute` (abstract / citations / recommendations);
+- batched `execute` arrays and multi-paper synthesis with `hdrr` (plus the
+  fallback to `search` + `execute` when the index isn't available);
+- empty-result recovery (broaden, then ask which concept matters);
+- interface mechanics phrased as casual asks: pagination via `offset`, the
+  50-result cap, and `arxiv:`/version-suffix ID normalization;
+- calibration: answering a purely conceptual question directly, with an offer
+  to fetch the primary source, rather than firing a tool.
 
 ## Two fidelity notes worth knowing
 
