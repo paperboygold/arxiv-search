@@ -29,16 +29,18 @@ Two request styles get dedicated coverage:
 - **Format:** OpenAI chat fine-tuning JSONL (one JSON object per line, with
   `messages`, `tools`, `parallel_tool_calls`).
 - **Interface taught:** the four MCP tools exposed by `crates/native/src/tool.rs`.
-- **Curation:** every conversation in `build_dataset.py` is written by hand.
-  The script is a *serializer + validator*, not a synthetic generator - it
-  exists because the JSON escaping is three levels deep and easy to get wrong.
+- **Composition:** 50 hand-written "gold" conversations, plus ~200 more
+  composed by a *controlled generator* inside `build_dataset.py` (a curated
+  topic bank x messy phrasing templates x the same tool-call patterns the gold
+  set uses). The generator is deterministic/reproducible, and every row - gold
+  or composed - passes the same validator. See "Volume & anti-overfitting".
 
 ## Files
 
 | File | Purpose |
 |---|---|
-| `arxiv_mcp_sft.jsonl` | The dataset. 50 conversations, ready for SFT. |
-| `build_dataset.py` | Hand-curated examples + serialization + validation. Re-run to regenerate the JSONL. |
+| `arxiv_mcp_sft.jsonl` | The dataset. 256 conversations (50 hand-written + ~206 composed), ready for SFT. |
+| `build_dataset.py` | The 50 gold examples, the controlled generator, plus serialization + validation. Re-run to regenerate the JSONL. |
 | `README.md` | This file. |
 
 Regenerate / validate:
@@ -87,8 +89,8 @@ server, so most examples reinforce it. The dataset also reinforces:
 | `execute` | one `Operation` or an **array** of them: `{op, id, limit, ...}` where `op` ∈ `abstract` \| `download` \| `citations` \| `recs` \| `retrieve` | `{id, op, result}` (or an array thereof) |
 | `hdrr` | `{q, limit_docs, limit_chunks}` | `{query, routed_documents[], chunks[]}` |
 
-The set is **discovery-heavy** by design (tool-call mix: `search` 48,
-`execute` 10, `retrieve_paper` 4, `hdrr` 2), because the target behavior is
+The set is **discovery-heavy** by design (tool-call mix: `search` 226,
+`execute` 117, `retrieve_paper` 35, `hdrr` 2), because the target behavior is
 "just go find papers off a poorly-structured instruction". Skills exercised:
 
 - inferring arXiv **category** filters from domain words, and `sort: date` from
@@ -131,6 +133,27 @@ The set is **discovery-heavy** by design (tool-call mix: `search` 48,
    metadata record - the examples reflect that, so the model learns to use
    `search` or `execute op=abstract` when it needs metadata.
 
+## Volume & anti-overfitting
+
+The 50 hand-written rows come first; the rest are composed by a deterministic
+generator (`build_dataset.py`, bottom section) that crosses a curated bank of
+~30 real-paper topics with the messy phrasing templates and the proven
+tool-call patterns. Because templated bulk is exactly where a fine-tune
+overfits, the generator is built to stay diverse:
+
+- every boilerplate string (intros, SoTA caveats, grounding notes, closers,
+  offers, headers) is drawn from a **rotated pool of 4-8 variants**, so no
+  single sentence dominates - in the current build no answer sentence repeats
+  in more than ~3% of rows (worst case 8/256), and user turns are near-unique;
+- each `(topic, intent)` pair appears at most twice, with different phrasing,
+  paper subset, and parameters;
+- `TARGET_GENERATED` (default 200) controls volume. Raise it for more data, but
+  watch the repetition - adding more topics/phrasings keeps it healthier than
+  simply turning the dial up.
+
+Treat the composed rows as breadth (phrasing/topic robustness) and the 50 gold
+rows as the quality anchor for richer multi-step behavior.
+
 ## Using it for fine-tuning
 
 The JSONL is in OpenAI's chat tool-calling format, which is consumed directly
@@ -142,9 +165,10 @@ LLaMA-Factory, Unsloth, Together, etc.).
   few strict validators want `content` to be null/empty when `tool_calls` are
   present; if your trainer is one of them, blank the `content` field on
   tool-call turns before training.
-- 38 curated rows is a **seed**, not a finished training set. For a durable
-  "native" capability, mix this with a larger corpus and/or hand-author more
-  rows in `build_dataset.py` following the same patterns.
+- 256 rows is a solid starter set, not a finished one. For a durable "native"
+  capability, mix this with a larger/real corpus, add topics and phrasings, and
+  consider mixing in some genuinely non-arxiv conversations so the model doesn't
+  learn to reach for these tools on every prompt.
 
 ## Source of truth
 

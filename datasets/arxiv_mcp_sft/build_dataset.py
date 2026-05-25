@@ -1459,6 +1459,571 @@ E([
 ])
 
 # --------------------------------------------------------------------------- #
+# Controlled volume expansion.
+#
+# The 50 conversations above are hand-written ("gold"). To reach a useful
+# training volume we additionally COMPOSE conversations from curated building
+# blocks: a bank of real-paper topics (mapped to arXiv categories), the messy
+# phrasing templates, and the same tool-call patterns the gold set uses. This
+# is deterministic (no RNG) and reproducible; every generated row is run
+# through the same validator as the gold rows. Tune TARGET_GENERATED to scale.
+# --------------------------------------------------------------------------- #
+
+TARGET_GENERATED = 200
+
+# More real arXiv papers (compact form), merged into PAPERS so domain coverage
+# is broad enough for the topic bank. (id, title, authors, cats, year, blurb)
+EXTRA_PAPERS = [
+    ("1508.04025", "Effective Approaches to Attention-based Neural Machine Translation",
+     ["Minh-Thang Luong", "Hieu Pham"], ["cs.CL"], 2015,
+     "We propose global and local attention mechanisms for neural machine translation, improving quality over non-attentional systems."),
+    ("2001.08361", "Scaling Laws for Neural Language Models",
+     ["Jared Kaplan", "Sam McCandlish"], ["cs.LG"], 2020,
+     "Language model loss scales as a power law with model size, dataset size, and compute, with smooth and predictable trends."),
+    ("2203.15556", "Training Compute-Optimal Large Language Models",
+     ["Jordan Hoffmann", "Sebastian Borgeaud"], ["cs.CL"], 2022,
+     "Current large models are undertrained; for compute-optimal training, model size and training tokens should scale equally (Chinchilla)."),
+    ("2206.07682", "Emergent Abilities of Large Language Models",
+     ["Jason Wei", "Yi Tay"], ["cs.CL"], 2022,
+     "Some abilities are absent in smaller models but emerge unpredictably in larger ones, a phenomenon we call emergence."),
+    ("2310.06825", "Mistral 7B",
+     ["Albert Q. Jiang", "Alexandre Sablayrolles"], ["cs.CL"], 2023,
+     "Mistral 7B outperforms larger models using grouped-query and sliding-window attention for efficient, high-quality inference."),
+    ("1907.11692", "RoBERTa: A Robustly Optimized BERT Pretraining Approach",
+     ["Yinhan Liu", "Myle Ott"], ["cs.CL"], 2019,
+     "We show BERT was significantly undertrained and present RoBERTa, an improved recipe matching or exceeding later models."),
+    ("1909.11942", "ALBERT: A Lite BERT for Self-supervised Learning of Language Representations",
+     ["Zhenzhong Lan", "Mingda Chen"], ["cs.CL"], 2019,
+     "We present parameter-reduction techniques that lower memory use and increase training speed for BERT-style models."),
+    ("1910.01108", "DistilBERT, a distilled version of BERT: smaller, faster, cheaper and lighter",
+     ["Victor Sanh", "Lysandre Debut"], ["cs.CL"], 2019,
+     "We distill BERT into a smaller, faster model that retains most of its language-understanding ability via knowledge distillation."),
+    ("1409.3215", "Sequence to Sequence Learning with Neural Networks",
+     ["Ilya Sutskever", "Oriol Vinyals"], ["cs.CL"], 2014,
+     "We present a general end-to-end sequence-to-sequence approach using multilayered LSTMs, applied to machine translation."),
+    ("1409.1556", "Very Deep Convolutional Networks for Large-Scale Image Recognition",
+     ["Karen Simonyan", "Andrew Zisserman"], ["cs.CV"], 2014,
+     "We investigate the effect of depth using very small 3x3 convolution filters, achieving strong image classification (VGG)."),
+    ("1409.4842", "Going Deeper with Convolutions",
+     ["Christian Szegedy", "Wei Liu"], ["cs.CV"], 2014,
+     "We propose the Inception architecture (GoogLeNet), increasing depth and width while keeping computation budget constant."),
+    ("1608.06993", "Densely Connected Convolutional Networks",
+     ["Gao Huang", "Zhuang Liu"], ["cs.CV"], 2016,
+     "We connect each layer to every other layer (DenseNet), strengthening feature propagation and reducing parameter count."),
+    ("1709.01507", "Squeeze-and-Excitation Networks",
+     ["Jie Hu", "Li Shen"], ["cs.CV"], 2017,
+     "We propose channel-wise feature recalibration (SE blocks) that adaptively reweight channels, improving CNN accuracy cheaply."),
+    ("1311.2524", "Rich feature hierarchies for accurate object detection and semantic segmentation",
+     ["Ross Girshick", "Jeff Donahue"], ["cs.CV"], 2013,
+     "We combine region proposals with CNN features (R-CNN), dramatically improving object detection performance."),
+    ("1506.01497", "Faster R-CNN: Towards Real-Time Object Detection with Region Proposal Networks",
+     ["Shaoqing Ren", "Kaiming He"], ["cs.CV"], 2015,
+     "We introduce a Region Proposal Network that shares features with the detector for near real-time object detection."),
+    ("1506.02640", "You Only Look Once: Unified, Real-Time Object Detection",
+     ["Joseph Redmon", "Santosh Divvala"], ["cs.CV"], 2015,
+     "We frame detection as a single regression problem (YOLO), enabling extremely fast real-time object detection."),
+    ("1411.4038", "Fully Convolutional Networks for Semantic Segmentation",
+     ["Jonathan Long", "Evan Shelhamer"], ["cs.CV"], 2014,
+     "We adapt classification networks into fully convolutional models that produce dense, pixelwise semantic segmentation."),
+    ("1505.04597", "U-Net: Convolutional Networks for Biomedical Image Segmentation",
+     ["Olaf Ronneberger", "Philipp Fischer"], ["cs.CV"], 2015,
+     "We present an encoder-decoder with skip connections (U-Net) that segments biomedical images from very few examples."),
+    ("1503.03585", "Deep Unsupervised Learning using Nonequilibrium Thermodynamics",
+     ["Jascha Sohl-Dickstein", "Eric A. Weiss"], ["cs.LG"], 2015,
+     "We introduce diffusion probabilistic models that learn to reverse a gradual noising process to model complex distributions."),
+    ("2011.13456", "Score-Based Generative Modeling through Stochastic Differential Equations",
+     ["Yang Song", "Jascha Sohl-Dickstein"], ["cs.LG"], 2020,
+     "We unify score-based and diffusion models through stochastic differential equations, enabling high-quality sampling and likelihoods."),
+    ("1312.6114", "Auto-Encoding Variational Bayes",
+     ["Diederik P. Kingma", "Max Welling"], ["stat.ML"], 2013,
+     "We introduce the variational autoencoder, a scalable method for inference and learning in directed latent-variable models."),
+    ("1607.06450", "Layer Normalization",
+     ["Jimmy Lei Ba", "Jamie Ryan Kiros"], ["stat.ML"], 2016,
+     "We normalize across features within a layer, stabilizing training for recurrent and transformer networks without batch dependence."),
+    ("1503.02531", "Distilling the Knowledge in a Neural Network",
+     ["Geoffrey Hinton", "Oriol Vinyals"], ["stat.ML"], 2015,
+     "We compress an ensemble's knowledge into a single small model by training it on softened output probabilities."),
+    ("1602.04938", "Why Should I Trust You?: Explaining the Predictions of Any Classifier",
+     ["Marco Tulio Ribeiro", "Sameer Singh"], ["cs.LG"], 2016,
+     "We present LIME, which explains any classifier's prediction by locally approximating it with an interpretable model."),
+    ("1705.07874", "A Unified Approach to Interpreting Model Predictions",
+     ["Scott Lundberg", "Su-In Lee"], ["cs.AI"], 2017,
+     "We present SHAP values, a unified game-theoretic measure of feature importance for individual model predictions."),
+    ("1602.01783", "Asynchronous Methods for Deep Reinforcement Learning",
+     ["Volodymyr Mnih", "Adria Puigdomenech Badia"], ["cs.LG"], 2016,
+     "We present asynchronous gradient descent for deep RL (A3C), stabilizing training without an experience replay buffer."),
+    ("1509.02971", "Continuous control with deep reinforcement learning",
+     ["Timothy P. Lillicrap", "Jonathan J. Hunt"], ["cs.LG"], 2015,
+     "We adapt deterministic policy gradients to continuous action spaces with deep function approximators (DDPG)."),
+    ("1801.01290", "Soft Actor-Critic: Off-Policy Maximum Entropy Deep Reinforcement Learning",
+     ["Tuomas Haarnoja", "Aurick Zhou"], ["cs.LG"], 2018,
+     "We propose a maximum-entropy off-policy actor-critic (SAC) that is sample-efficient and stable for continuous control."),
+    ("1509.06461", "Deep Reinforcement Learning with Double Q-learning",
+     ["Hado van Hasselt", "Arthur Guez"], ["cs.LG"], 2015,
+     "We show DQN overestimates action values and propose Double DQN to reduce the bias, improving performance."),
+    ("2108.07258", "On the Opportunities and Risks of Foundation Models",
+     ["Rishi Bommasani", "Drew A. Hudson"], ["cs.LG"], 2021,
+     "We survey foundation models trained at scale, examining their capabilities, applications, and societal risks."),
+    ("2303.08774", "GPT-4 Technical Report",
+     ["OpenAI"], ["cs.CL"], 2023,
+     "We report GPT-4, a large multimodal model exhibiting human-level performance on a range of professional and academic benchmarks."),
+]
+
+for _pid, _title, _authors, _cats, _year, _abs in EXTRA_PAPERS:
+    PAPERS.setdefault(_pid, {
+        "title": _title,
+        "authors": _authors,
+        "cats": _cats,
+        "published": f"{_year}-01-01T00:00:00Z",
+        "abstract": _abs,
+    })
+
+# Topic bank: a natural-language phrase, the abstract query terms, the arXiv
+# categories the model should infer, and representative real paper IDs.
+TOPICS = [
+    {"phrase": "the transformer architecture", "q": "transformer self-attention architecture",
+     "cats": ["cs.CL", "cs.LG"], "ids": ["1706.03762", "1409.0473", "1508.04025", "2104.09864"]},
+    {"phrase": "scaling up large language models", "q": "scaling large language models",
+     "cats": ["cs.CL", "cs.LG"], "ids": ["2005.14165", "2001.08361", "2203.15556", "2206.07682"]},
+    {"phrase": "open-source LLMs", "q": "open foundation large language model",
+     "cats": ["cs.CL"], "ids": ["2302.13971", "2307.09288", "2310.06825", "2401.04088"]},
+    {"phrase": "LLM reasoning", "q": "reasoning large language models chain of thought",
+     "cats": ["cs.CL"], "ids": ["2201.11903", "2305.10601", "2210.03629"]},
+    {"phrase": "tool-using LLM agents", "q": "language model tool use agents",
+     "cats": ["cs.CL", "cs.AI"], "ids": ["2302.04761", "2210.03629"]},
+    {"phrase": "aligning models to human preferences", "q": "human feedback preference alignment",
+     "cats": ["cs.CL", "cs.LG"], "ids": ["2203.02155", "2305.18290"]},
+    {"phrase": "retrieval-augmented generation", "q": "retrieval augmented generation",
+     "cats": ["cs.CL"], "ids": ["2005.11401"]},
+    {"phrase": "parameter-efficient fine-tuning", "q": "parameter efficient fine-tuning low-rank",
+     "cats": ["cs.CL", "cs.LG"], "ids": ["2106.09685"]},
+    {"phrase": "making LLMs cheaper to run", "q": "quantization efficient inference transformer",
+     "cats": ["cs.LG"], "ids": ["2210.17323", "2205.14135", "2009.06732"]},
+    {"phrase": "long-context sequence models", "q": "long context efficient sequence modeling state space",
+     "cats": ["cs.LG"], "ids": ["2312.00752", "2205.14135"]},
+    {"phrase": "mixture-of-experts models", "q": "sparse mixture of experts language model",
+     "cats": ["cs.LG", "cs.CL"], "ids": ["2401.04088"]},
+    {"phrase": "word embeddings", "q": "word representations embeddings vector space",
+     "cats": ["cs.CL"], "ids": ["1301.3781"]},
+    {"phrase": "self-supervised pretraining for NLP", "q": "self-supervised pre-training language representation",
+     "cats": ["cs.CL"], "ids": ["1810.04805", "1907.11692", "1909.11942", "1910.01108", "1910.10683"]},
+    {"phrase": "neural machine translation", "q": "neural machine translation sequence to sequence",
+     "cats": ["cs.CL"], "ids": ["1409.3215", "1409.0473", "1508.04025"]},
+    {"phrase": "convolutional network architectures", "q": "deep convolutional neural network image classification",
+     "cats": ["cs.CV"], "ids": ["1512.03385", "1409.1556", "1409.4842", "1608.06993", "1709.01507"]},
+    {"phrase": "vision transformers", "q": "image recognition transformer patches",
+     "cats": ["cs.CV"], "ids": ["2010.11929"]},
+    {"phrase": "object detection", "q": "object detection region proposal",
+     "cats": ["cs.CV"], "ids": ["1311.2524", "1506.01497", "1506.02640"]},
+    {"phrase": "image segmentation", "q": "semantic segmentation fully convolutional",
+     "cats": ["cs.CV"], "ids": ["1411.4038", "1505.04597", "2304.02643"]},
+    {"phrase": "diffusion generative models", "q": "diffusion image synthesis generative",
+     "cats": ["cs.CV", "cs.LG"], "ids": ["2006.11239", "2112.10752", "1503.03585", "2011.13456"]},
+    {"phrase": "GANs and variational autoencoders", "q": "generative adversarial network variational autoencoder",
+     "cats": ["cs.LG", "stat.ML"], "ids": ["1406.2661", "1312.6114"]},
+    {"phrase": "connecting images and text", "q": "contrastive image text zero-shot",
+     "cats": ["cs.CV"], "ids": ["2103.00020"]},
+    {"phrase": "speech recognition", "q": "speech recognition multilingual",
+     "cats": ["eess.AS", "cs.CL"], "ids": ["2212.04356"]},
+    {"phrase": "value-based reinforcement learning", "q": "deep reinforcement learning value function",
+     "cats": ["cs.LG"], "ids": ["1312.5602", "1509.06461", "1602.01783"]},
+    {"phrase": "policy-gradient reinforcement learning", "q": "policy gradient continuous control",
+     "cats": ["cs.LG"], "ids": ["1707.06347", "1509.02971", "1801.01290"]},
+    {"phrase": "graph neural networks", "q": "graph neural network",
+     "cats": ["cs.LG"], "ids": ["1609.02907"]},
+    {"phrase": "optimization for deep learning", "q": "stochastic optimization adaptive gradient",
+     "cats": ["cs.LG"], "ids": ["1412.6980"]},
+    {"phrase": "normalization techniques", "q": "normalization training deep networks",
+     "cats": ["cs.LG"], "ids": ["1502.03167", "1607.06450"]},
+    {"phrase": "knowledge distillation and model compression", "q": "knowledge distillation model compression",
+     "cats": ["cs.LG"], "ids": ["1503.02531", "1910.01108"]},
+    {"phrase": "position encodings in transformers", "q": "position embedding transformer rotary",
+     "cats": ["cs.CL", "cs.LG"], "ids": ["2104.09864"]},
+    {"phrase": "explainability of ML models", "q": "interpretability explanation model predictions",
+     "cats": ["cs.LG"], "ids": ["1602.04938", "1705.07874"]},
+    {"phrase": "foundation models", "q": "foundation models pretraining general-purpose",
+     "cats": ["cs.LG", "cs.CL"], "ids": ["2108.07258", "2303.08774"]},
+]
+
+DISCOVERY_PHRASINGS = [
+    "go find me research on {p}",
+    "find some papers on {p}",
+    "i need to read up on {p}, point me at some papers",
+    "what are the key papers on {p}?",
+    "got anything good on {p}?",
+    "dig up some work on {p} for me",
+]
+SOTA_PHRASINGS = [
+    "go find the current state of the art on {p}",
+    "whats the SoTA for {p} right now",
+    "what's the latest and greatest in {p}?",
+    "find me the cutting edge of {p}",
+    "where's {p} at these days? find recent work",
+]
+GROUNDING_PHRASINGS = [
+    "ground yourself against arxiv and give me the gist of {p}",
+    "dont answer from memory - check arxiv first about {p}",
+    "before you explain {p}, ground it in the actual paper",
+    "fact-check this against arxiv: whats the deal with {p}?",
+]
+DEEPREAD_PHRASINGS = [
+    "find the key paper on {p} and walk me through it",
+    "grab the main paper on {p} and break it down",
+    "get me the foundational {p} paper and explain the core idea",
+]
+CITATIONS_PHRASINGS = [
+    "find a major paper on {p} and tell me what cites it",
+    "who builds on the main {p} work? find the citations",
+]
+RECS_PHRASINGS = [
+    "i'm into {p} - find me papers similar to the main one",
+    "recommend papers like the key {p} paper",
+]
+COMPARE_PHRASINGS = [
+    "compare the main approaches to {p}",
+    "whats the difference between the top {p} methods?",
+]
+LITREVIEW_PHRASINGS = [
+    "i'm doing a lit review on {p}, where do i start?",
+    "give me the lay of the land on {p}",
+]
+# Many variants for every boilerplate string, rotated by a running counter so
+# no single sentence repeats often (avoids the model overfitting to templates).
+INTRO_DISCOVERY = [
+    "Here's what's worth reading:", "Good starting points:", "Key papers on this:",
+    "A few that matter:", "These are the ones I'd grab:", "Solid entry points:",
+    "Here's a useful cluster:",
+]
+OFFER_POOL = [
+    "Want any of these in full?", "Want me to retrieve one of these?",
+    "Should I pull the abstract of any?", "Want me to broaden or narrow the search?",
+    "Happy to go deeper on whichever looks right.", "Say which one and I'll fetch it.",
+    "Want citations or recommendations off any of these?", "I can pull the method section of any.",
+]
+SOTA_LEADS = [
+    "Leading recent work on {p}:", "Most recent notable work on {p}:",
+    "Where {p} is right now, recent-first:", "The current frontier on {p}:",
+    "Recent, high-signal work on {p}:", "Newest standout work on {p}:",
+]
+SOTA_CAVEATS = [
+    "Caveat: arXiv isn't a live leaderboard, so treat this as the leading recent line, not a ranking.",
+    "Bear in mind arXiv shows recent work, not benchmark standings - this is the active frontier, not a ranked #1.",
+    "\"SoTA\" moves fast and isn't one number here; read this as the current direction, not a fixed ranking.",
+    "Note this is the leading recent line on arXiv, not a live benchmark result.",
+    "One caveat: arXiv isn't a leaderboard, so this is \"what's hot recently\" rather than \"the top score\".",
+    "Keep in mind these are recent influential papers, not a measured ranking.",
+]
+GROUND_NOTES = [
+    "Grounding instruction -> fetch the source before answering, not from memory.",
+    "They asked me to ground against arXiv, so I check the paper instead of recalling.",
+    "Honoring 'check arxiv first' - resolving the actual paper before answering.",
+    "Verifying from the source rather than memory; finding the paper first.",
+    "Grounding the answer in the paper, not my recollection.",
+]
+GROUND_NOTES2 = [
+    "Reading the abstract to ground the answer.",
+    "Pulling the abstract so the answer comes from the paper.",
+    "Grounding the claim in the abstract.",
+    "Reading the source abstract before I summarize.",
+]
+GROUND_LEADS = [
+    "Grounded in the source -", "Checked against arXiv -", "Straight from the paper -",
+    "Verified from the source -", "Per the paper itself -", "From the source, not memory -",
+]
+GROUND_TAGS = [
+    " (Pulled from arXiv, not from memory.)", " (That's from the paper, not recollection.)",
+    " (Grounded in the source above.)", "", " (Checked against the source, not recalled.)", "",
+]
+DEEPREAD_NOTES = [
+    "Locating the key paper before reading it.",
+    "Finding the right paper first so I read the correct one.",
+    "Resolving the main paper, then I'll read it.",
+]
+DEEPREAD_NOTES2 = [
+    "Retrieving the full text, chunked with structure, to read the method.",
+    "Pulling the full paper, chunked, to walk through the method.",
+    "Retrieving and segmenting the paper so I can read the method.",
+]
+DEEPREAD_LEADS = [
+    "Found and read **{t}** ({pid}).", "Pulled and read **{t}** ({pid}).",
+    "Got it - **{t}** ({pid}), read in full.", "Here it is: **{t}** ({pid}).",
+]
+DEEPREAD_CLOSERS = [
+    "Want me to go deeper into a specific section?",
+    "Want the experiments, or just the method?",
+    "I can pull a specific section if you want more detail.",
+    "Say the word and I'll dig into any part.",
+]
+COMPARE_CLOSERS = [
+    "They differ mainly in approach and scope; tell me which axis matters and I'll dig into the methods.",
+    "The contrast is mostly method and emphasis - want me to read either one's details?",
+    "Different angles on the same problem; I can pull either method section to go deeper.",
+    "Tell me what you care about (speed, quality, simplicity) and I'll compare on that axis.",
+]
+COMPARE_NOTES = [
+    "Comparison -> pull both abstracts in one batched execute call.",
+    "Comparing two -> one batched execute with both abstracts.",
+    "Side-by-side -> fetch both abstracts in a single batched call.",
+    "Two-way compare -> batch both abstracts in one execute.",
+]
+CITE_NOTES = [
+    "Resolve the paper first, then fetch what cites it.",
+    "Find the paper, then look up its citations.",
+]
+CITE_NOTES2 = ["Fetching citing papers.", "Pulling what cites it.", "Looking up the citation list."]
+CITE_HEADERS = [
+    "Work building on **{t}** ({pid}):", "Papers that cite **{t}** ({pid}):",
+    "Building on **{t}** ({pid}):",
+]
+RECS_NOTES = [
+    "\"Similar to the main one\" -> recommendations for the key paper.",
+    "Asking for papers similar to the key one.",
+]
+RECS_HEADERS = [
+    "Similar to **{t}** ({pid}):", "In the same vein as **{t}** ({pid}):",
+    "If you liked **{t}** ({pid}), also see:",
+]
+LIT_INTROS = ["Lay of the land on {p}:", "The landscape on {p}:", "Where to start on {p}:"]
+LIT_CLOSERS = [
+    "Start with **{t}** ({pid}); I can retrieve its method when you're ready.",
+    "I'd begin with **{t}** ({pid}) - want its method section?",
+    "**{t}** ({pid}) is the best entry point; say the word to go deeper.",
+]
+LIT_NOTES2 = [
+    "Pulling the key abstracts to summarize the landscape.",
+    "Grabbing a couple of key abstracts for the overview.",
+]
+N_POOL = [4, 5, 6, 5, 8, 4, 10, 6]
+TOTAL_POOL = [123, 487, 1820, 56, 940, 312, 2104, 88, 651, 274]
+INTENT_ORDER = ["discovery", "sota", "grounding", "deep_read", "compare", "lit_review", "citations", "recs"]
+
+
+def pick(lst, seq):
+    return lst[seq % len(lst)]
+
+
+def _year(pid):
+    y = PAPERS[pid]["published"][:4]
+    return int(y) if y.isdigit() else 2020
+
+
+def _blurb(pid):
+    sentence = PAPERS[pid]["abstract"].split(". ")[0].strip().rstrip(".")
+    words = sentence.split()
+    if len(words) > 22:
+        sentence = " ".join(words[:22]) + " ..."
+    return sentence
+
+
+def _line(pid):
+    return f"- **{PAPERS[pid]['title']}** ({pid}, {_year(pid)}) - {_blurb(pid)}."
+
+
+def _ss_from(pid):
+    p = PAPERS[pid]
+    return ss_paper(pid, p["title"], p["authors"][:1] if p["authors"] else ["et al."], _year(pid))
+
+
+def _rotate(ids, k, seq):
+    start = seq % len(ids)
+    return (ids[start:] + ids[:start])[:k]
+
+
+def build_conv(topic, intent, seq, phr):
+    ids = topic["ids"]
+    if not ids:
+        return None
+    p = topic["phrase"]
+    cats = topic["cats"]
+    catstr = ", ".join(cats)
+    q = topic["q"]
+    n = N_POOL[seq % len(N_POOL)]
+    total = TOTAL_POOL[seq % len(TOTAL_POOL)]
+
+    if intent == "discovery":
+        if len(ids) == 1 and phr > 0:
+            return None
+        chosen = _rotate(ids, min(3, len(ids)), seq)
+        u = DISCOVERY_PHRASINGS[seq % len(DISCOVERY_PHRASINGS)].format(p=p)
+        intro = INTRO_DISCOVERY[seq % len(INTRO_DISCOVERY)]
+        ans = intro + "\n" + "\n".join(_line(i) for i in chosen) + "\n\n" + OFFER_POOL[seq % len(OFFER_POOL)]
+        return [
+            usr(u),
+            call("search", {"q": f"abs:{q}", "cats": cats, "n": n, "sort": "relevance"},
+                 note=f"Reading this as {p}; searching abstracts in {catstr}."),
+            result("call_1", search_response(chosen, total)),
+            asst(ans),
+        ]
+
+    if intent == "sota":
+        if len(ids) == 1 and phr > 0:
+            return None
+        chosen = _rotate(ids, min(3, len(ids)), seq)
+        u = SOTA_PHRASINGS[seq % len(SOTA_PHRASINGS)].format(p=p)
+        ans = (pick(SOTA_LEADS, seq).format(p=p) + "\n" + "\n".join(_line(i) for i in chosen) +
+               "\n\n" + pick(SOTA_CAVEATS, seq) + " " + pick(OFFER_POOL, seq + 3))
+        return [
+            usr(u),
+            call("search", {"q": f"abs:{q}", "cats": cats, "n": n, "sort": "date"},
+                 note=f"\"SoTA/recent\" -> sort by date; {p} -> {catstr}."),
+            result("call_1", search_response(chosen, total)),
+            asst(ans),
+        ]
+
+    if intent == "grounding":
+        if phr >= len(ids):
+            return None
+        pid = ids[phr % len(ids)]
+        u = GROUNDING_PHRASINGS[seq % len(GROUNDING_PHRASINGS)].format(p=p)
+        ans = (f"{pick(GROUND_LEADS, seq)} **{PAPERS[pid]['title']}** ({pid}, {_year(pid)}). "
+               f"{PAPERS[pid]['abstract']}{pick(GROUND_TAGS, seq)}")
+        return [
+            usr(u),
+            call("search", {"q": f"abs:{q}", "n": 1, "sort": "relevance"},
+                 note=pick(GROUND_NOTES, seq)),
+            result("call_1", search_response([pid], total)),
+            call("execute", {"op": "abstract", "id": pid}, cid="call_2",
+                 note=pick(GROUND_NOTES2, seq)),
+            result("call_2", exec_one(pid, "abstract", full_paper(pid))),
+            asst(ans),
+        ]
+
+    if intent == "deep_read":
+        if phr >= len(ids):
+            return None
+        pid = ids[phr % len(ids)]
+        u = DEEPREAD_PHRASINGS[seq % len(DEEPREAD_PHRASINGS)].format(p=p)
+        ans = (pick(DEEPREAD_LEADS, seq).format(t=PAPERS[pid]['title'], pid=pid) +
+               " The core idea, from the paper: " + PAPERS[pid]['abstract'] + " " +
+               pick(DEEPREAD_CLOSERS, seq))
+        return [
+            usr(u),
+            call("search", {"q": f"abs:{q}", "n": 1, "sort": "relevance"},
+                 note=pick(DEEPREAD_NOTES, seq)),
+            result("call_1", search_response([pid], total)),
+            call("retrieve_paper", {"paper_id": pid, "segmentation_k": 1.2}, cid="call_2",
+                 note=pick(DEEPREAD_NOTES2, seq)),
+            result("call_2", prepared(pid, "html", [PAPERS[pid]["abstract"]],
+                                      pruned_md=f"# {PAPERS[pid]['title']}\n\n...")),
+            asst(ans),
+        ]
+
+    if intent == "citations":
+        if len(ids) < 2 or phr >= len(ids):
+            return None
+        subj = ids[phr % len(ids)]
+        others = [i for i in ids if i != subj][:3]
+        u = CITATIONS_PHRASINGS[seq % len(CITATIONS_PHRASINGS)].format(p=p)
+        body = "\n".join(f"- **{PAPERS[i]['title']}** ({i})" for i in others)
+        header = pick(CITE_HEADERS, seq).format(t=PAPERS[subj]['title'], pid=subj)
+        return [
+            usr(u),
+            call("search", {"q": f"abs:{q}", "n": 1, "sort": "relevance"},
+                 note=pick(CITE_NOTES, seq)),
+            result("call_1", search_response([subj], total)),
+            call("execute", {"op": "citations", "id": subj, "limit": 3}, cid="call_2",
+                 note=pick(CITE_NOTES2, seq)),
+            result("call_2", exec_one(subj, "citations", [_ss_from(i) for i in others])),
+            asst(f"{header}\n{body}"),
+        ]
+
+    if intent == "recs":
+        if len(ids) < 2 or phr >= len(ids):
+            return None
+        subj = ids[phr % len(ids)]
+        others = [i for i in ids if i != subj][:3]
+        u = RECS_PHRASINGS[seq % len(RECS_PHRASINGS)].format(p=p)
+        body = "\n".join(f"- **{PAPERS[i]['title']}** ({i})" for i in others)
+        header = pick(RECS_HEADERS, seq).format(t=PAPERS[subj]['title'], pid=subj)
+        return [
+            usr(u),
+            call("execute", {"op": "recs", "id": subj, "limit": 3},
+                 note=pick(RECS_NOTES, seq)),
+            result("call_1", exec_one(subj, "recs", [_ss_from(i) for i in others])),
+            asst(f"{header}\n{body}"),
+        ]
+
+    if intent == "compare":
+        if len(ids) < 2:
+            return None
+        two = _rotate(ids, 2, seq + phr)
+        a, b = two[0], two[1]
+        if a == b:
+            return None
+        u = COMPARE_PHRASINGS[seq % len(COMPARE_PHRASINGS)].format(p=p)
+        ans = (f"- **{PAPERS[a]['title']}** ({a}) - {_blurb(a)}.\n"
+               f"- **{PAPERS[b]['title']}** ({b}) - {_blurb(b)}.\n\n" + pick(COMPARE_CLOSERS, seq))
+        return [
+            usr(u),
+            call("execute", [{"op": "abstract", "id": a}, {"op": "abstract", "id": b}],
+                 note=pick(COMPARE_NOTES, seq)),
+            result("call_1", [exec_one(a, "abstract", full_paper(a)), exec_one(b, "abstract", full_paper(b))]),
+            asst(ans),
+        ]
+
+    if intent == "lit_review":
+        if len(ids) < 2:
+            return None
+        chosen = _rotate(ids, min(3, len(ids)), seq)
+        two = chosen[:2]
+        u = LITREVIEW_PHRASINGS[seq % len(LITREVIEW_PHRASINGS)].format(p=p)
+        body = "\n".join(_line(i) for i in chosen)
+        ans = (pick(LIT_INTROS, seq).format(p=p) + f"\n{body}\n\n" +
+               pick(LIT_CLOSERS, seq).format(t=PAPERS[two[0]]['title'], pid=two[0]))
+        return [
+            usr(u),
+            call("search", {"q": f"abs:{q}", "cats": cats, "n": n, "sort": "relevance"},
+                 note=f"Lit-review scan -> discover in {catstr}, then pull the key abstracts."),
+            result("call_1", search_response(chosen, total)),
+            call("execute", [{"op": "abstract", "id": i} for i in two], cid="call_2",
+                 note=pick(LIT_NOTES2, seq)),
+            result("call_2", [exec_one(i, "abstract", full_paper(i)) for i in two]),
+            asst(ans),
+        ]
+
+    return None
+
+
+GOLD_COUNT = len(EXAMPLES)
+_seq = 0
+for _phr in (0, 1):
+    for _intent in INTENT_ORDER:
+        for _topic in TOPICS:
+            if len(EXAMPLES) - GOLD_COUNT >= TARGET_GENERATED:
+                break
+            _conv = build_conv(_topic, _intent, _seq, _phr)
+            if _conv is not None:
+                EXAMPLES.append(_conv)
+                _seq += 1
+
+# A handful of pagination conversations phrased as casual follow-ups.
+_PAG_FOLLOWUPS = ["gimme more", "next batch please", "show me the next page", "more, these arent quite it"]
+_pag = 0
+for _topic in TOPICS:
+    if _pag >= 12:
+        break
+    _ids = _topic["ids"]
+    if len(_ids) < 4:
+        continue
+    _first, _second = _ids[:2], _ids[2:4]
+    _q, _cats, _p = _topic["q"], _topic["cats"], _topic["phrase"]
+    EXAMPLES.append([
+        usr(f"show me papers on {_p}"),
+        call("search", {"q": f"abs:{_q}", "cats": _cats, "n": 2, "sort": "relevance"},
+             note="Initial discovery search."),
+        result("call_1", search_response(_first, 900)),
+        asst("Top hits: " + " and ".join(f"**{PAPERS[i]['title']}** ({i})" for i in _first) + ". Want more?"),
+        usr(_PAG_FOLLOWUPS[_pag % len(_PAG_FOLLOWUPS)]),
+        call("search", {"q": f"abs:{_q}", "cats": _cats, "n": 2, "offset": 2, "sort": "relevance"},
+             cid="call_2", note="Advancing the page with offset=2."),
+        result("call_2", search_response(_second, 900, start=2)),
+        asst("Next page: " + " and ".join(f"**{PAPERS[i]['title']}** ({i})" for i in _second) +
+             ". I can keep paging (offset 4, 6, ...) or narrow it down."),
+    ])
+    _pag += 1
+
+
+# --------------------------------------------------------------------------- #
 # Assembly + validation.
 # --------------------------------------------------------------------------- #
 
