@@ -566,6 +566,18 @@ PAPERS = {
             "across languages and accents."
         ),
     },
+    "1409.0473": {
+        "title": "Neural Machine Translation by Jointly Learning to Align and Translate",
+        "authors": ["Dzmitry Bahdanau", "Kyunghyun Cho", "Yoshua Bengio"],
+        "cats": ["cs.CL", "cs.LG", "stat.ML"],
+        "published": "2014-09-01T00:00:00Z",
+        "abstract": (
+            "We introduce an attention mechanism that lets a neural machine "
+            "translation model automatically soft-search for the parts of the "
+            "source sentence relevant to predicting each target word, instead of "
+            "squeezing the whole source into a single fixed-length vector."
+        ),
+    },
 }
 
 # --------------------------------------------------------------------------- #
@@ -1290,6 +1302,160 @@ E([
          note="arXiv caps a single call at 50 results, so requesting the max and flagging pagination for the rest."),
     result("call_1", search_response(["1312.5602", "1707.06347"], 41000)),
     asst("Heads up: one call tops out at 50 results (there are ~41,000 RL matches in cs.LG), so I pulled the top 50 - led by **DQN** (1312.5602) and **PPO** (1707.06347). To go past 50 I page with `offset` (50, 100, ...). Want me to start paging, or narrow by subtopic/year so the first 50 are actually the right ones?"),
+])
+
+# ---- "find the current SoTA": recency + surface the leading work ----------- #
+
+# 42. SoTA in text-to-image generation.
+E([
+    usr("go find the current state of the art on text-to-image generation"),
+    call("search", {"q": "abs:text-to-image generation diffusion", "cats": ["cs.CV"], "n": 6, "sort": "date"},
+         note="\"Current SoTA\" -> recent leading work; image generation -> cs.CV diffusion, sort by date."),
+    result("call_1", search_response(["2112.10752", "2006.11239"], 3310)),
+    asst(
+        "On arXiv, the dominant recent line for text-to-image is latent diffusion:\n"
+        "- **High-Resolution Image Synthesis with Latent Diffusion Models** (2112.10752) - runs diffusion in a compressed "
+        "latent space; the basis of the Stable Diffusion family and the current workhorse.\n"
+        "- **Denoising Diffusion Probabilistic Models** (2006.11239) - the formulation it builds on.\n\n"
+        "One caveat: arXiv isn't a live leaderboard, so 'SoTA' here means the leading *recent* approach, not a benchmark "
+        "ranking. Want me to pull the newest follow-ups in a specific direction (control, speed, video)?"
+    ),
+])
+
+# 43. SoTA open LLMs right now.
+E([
+    usr("whats the SoTA for open LLMs right now"),
+    call("search", {"q": "abs:open foundation large language model", "cats": ["cs.CL"], "n": 6, "sort": "date"},
+         note="\"SoTA right now\" -> most recent open models in cs.CL, date-sorted."),
+    result("call_1", search_response(["2401.04088", "2307.09288", "2302.13971"], 980)),
+    asst(
+        "Recent-first, the leading open models on arXiv are:\n"
+        "- **Mixtral of Experts** (2401.04088) - sparse MoE, strong quality at lower active-parameter cost.\n"
+        "- **Llama 2** (2307.09288) - 7B-70B, pretrained + chat-tuned, widely adopted.\n"
+        "- **LLaMA** (2302.13971) - the open foundation line these built on.\n\n"
+        "\"SoTA\" in open LLMs turns over fast and isn't a single number, so treat this as the current frontier of *recent* "
+        "releases rather than a fixed ranking. Want the latest entrants in a size class you care about?"
+    ),
+])
+
+# 44. SoTA for long context efficiency.
+E([
+    usr("find me the state of the art for handling long context efficiently"),
+    call("search", {"q": "abs:long context efficient sequence modeling", "cats": ["cs.LG"], "n": 6, "sort": "date"},
+         note="SoTA + efficiency for long sequences -> cs.LG, date-sorted."),
+    result("call_1", search_response(["2312.00752", "2205.14135"], 712)),
+    asst(
+        "The leading recent approaches split two ways:\n"
+        "- **Mamba** (2312.00752) - replace attention with a selective state-space model that's *linear* in length.\n"
+        "- **FlashAttention** (2205.14135) - keep exact attention but make it IO-aware so long contexts fit and run fast.\n\n"
+        "So 'SoTA' here is either a sub-quadratic architecture (Mamba) or a hardware-efficient exact-attention kernel "
+        "(FlashAttention), depending on whether you can change the model. I can pull either in full."
+    ),
+])
+
+# 45. SoTA multilingual speech recognition.
+E([
+    usr("whats the current sota for multilingual speech recognition"),
+    call("search", {"q": "abs:multilingual speech recognition", "cats": ["eess.AS", "cs.CL"], "n": 5, "sort": "date"},
+         note="SoTA multilingual ASR -> eess.AS/cs.CL, date-sorted."),
+    result("call_1", search_response(["2212.04356"], 184)),
+    asst("The reference point is **Whisper / Robust Speech Recognition via Large-Scale Weak Supervision** (2212.04356) - trained on 680k hours of multilingual, multitask audio, it's the strong zero-shot baseline most current multilingual ASR work compares against. (arXiv shows leading work, not a live WER leaderboard.)"),
+])
+
+# ---- "ground yourself against arxiv": verify from the source, not memory --- #
+
+# 46. Explicit grounding + confirm with the source's own caveat.
+E([
+    usr("ground yourself against arxiv: is chain-of-thought actually better than plain prompting, or am i misremembering?"),
+    call("search", {"q": "ti:chain-of-thought prompting reasoning", "n": 1},
+         note="They asked me to ground against arxiv, so I verify from the source rather than answering from memory."),
+    result("call_1", search_response(["2201.11903"], 3)),
+    call("execute", {"op": "abstract", "id": "2201.11903"}, cid="call_2",
+         note="Reading the abstract to ground the answer (and catch any caveats)."),
+    result("call_2", exec_one("2201.11903", "abstract", full_paper("2201.11903"))),
+    asst(
+        "Grounded in the source, you're remembering right - with one caveat the paper makes explicit. **Chain-of-Thought "
+        "Prompting** (2201.11903) shows that prompting for intermediate reasoning steps *significantly* improves complex "
+        "reasoning over standard prompting. But the gain **emerges with scale**: it's large for big models and small or "
+        "absent for small ones. So \"better\" is true mainly at sufficient model size, not universally."
+    ),
+])
+
+# 47. "don't answer from memory, check arxiv first".
+E([
+    usr("dont just answer from memory — check arxiv first. what did the RAG paper actually propose?"),
+    call("search", {"q": "ti:retrieval-augmented generation knowledge-intensive", "n": 1},
+         note="Honoring the 'check arxiv first' instruction; resolving the paper before answering."),
+    result("call_1", search_response(["2005.11401"], 3)),
+    call("execute", {"op": "abstract", "id": "2005.11401"}, cid="call_2",
+         note="Grounding the answer in the abstract."),
+    result("call_2", exec_one("2005.11401", "abstract", full_paper("2005.11401"))),
+    asst(
+        "Checked against the source - **Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks** (2005.11401, "
+        "Lewis et al., 2020). What it actually proposed: pair a pretrained *parametric* seq2seq generator with a *non-"
+        "parametric* memory - a dense vector index of Wikipedia accessed by a neural retriever. At generation time it "
+        "retrieves relevant passages and conditions the output on them, so knowledge can be updated by swapping the index "
+        "rather than retraining. That's the grounding mechanism, straight from the paper, not from memory."
+    ),
+])
+
+# 48. Verify a user's belief and CORRECT it via grounding.
+E([
+    usr("fact check me real quick — the transformer was the first model to use attention, right? ground it against arxiv"),
+    call("search", {"q": "abs:attention mechanism neural machine translation", "cats": ["cs.CL"], "n": 5, "sort": "relevance"},
+         note="Verifying the claim against the source - searching for attention work both before and at the Transformer."),
+    result("call_1", search_response(["1409.0473", "1706.03762"], 1290)),
+    asst(
+        "Grounded against arXiv - not quite, and it's a common mix-up. Attention *predates* the Transformer:\n"
+        "- **Neural Machine Translation by Jointly Learning to Align and Translate** (1409.0473, Bahdanau et al., 2014) "
+        "introduced the attention mechanism, letting a translation model soft-search the source instead of using a single "
+        "fixed vector.\n"
+        "- **Attention Is All You Need** (1706.03762, 2017) was the first to rely *solely* on attention - dropping "
+        "recurrence and convolution entirely.\n\n"
+        "So the accurate statement is: the Transformer was the first *attention-only* model, not the first to use attention."
+    ),
+])
+
+# 49. "ground yourself" before giving the gist of a concept.
+E([
+    usr("ground yourself against arxiv and give me the gist of what DPO is"),
+    call("search", {"q": "ti:direct preference optimization", "n": 1},
+         note="Grounding instruction -> fetch the DPO paper before summarizing."),
+    result("call_1", search_response(["2305.18290"], 2)),
+    call("execute", {"op": "abstract", "id": "2305.18290"}, cid="call_2",
+         note="Summarizing from the abstract, not from memory."),
+    result("call_2", exec_one("2305.18290", "abstract", full_paper("2305.18290"))),
+    asst(
+        "Grounded in the paper - **Direct Preference Optimization** (2305.18290, Rafailov et al., 2023). The gist: you can "
+        "align a model to human preferences *directly* with a simple classification-style loss on preferred-vs-rejected "
+        "response pairs, skipping the usual RLHF machinery (no separate reward model, no RL/PPO loop). The paper's framing "
+        "is that the language model is implicitly its own reward model, so you optimize it in one step."
+    ),
+])
+
+# 50. Verify a specific technical claim against the actual method text.
+E([
+    usr("i'm pretty sure LoRA keeps the base weights frozen and only trains small matrices — verify that against the paper, dont guess"),
+    call("search", {"q": "ti:low-rank adaptation large language models", "n": 1},
+         note="Resolve the LoRA paper, then read its method to verify the specific claim."),
+    result("call_1", search_response(["2106.09685"], 2)),
+    call("retrieve_paper", {"paper_id": "2106.09685", "segmentation_k": 1.2}, cid="call_2",
+         note="Reading the method section so the verification comes from the source, not memory."),
+    result("call_2", prepared(
+        "2106.09685", "html",
+        [
+            "LoRA freezes the pretrained weight matrix W0 and represents its update as a low-rank product BA, so only A and B are optimized while W0 stays fixed.",
+            "Because the update BA can be merged into W0 after training, LoRA adds no inference latency relative to a fully fine-tuned model.",
+        ],
+        pruned_md="# LoRA\n\n## Method\n\n...",
+        parents=["Method", "Method"],
+        clusters=["Low-Rank Update", "No Inference Latency"])),
+    asst(
+        "Verified against the method section of **LoRA** (2106.09685): you're correct. The paper freezes the pretrained "
+        "weight matrix W0 and learns only a low-rank update BA (with B and A the small trainable matrices); W0 itself is "
+        "never updated. It adds the detail that BA can be merged back into W0 after training, so there's no extra inference "
+        "latency. Your recollection holds up against the source."
+    ),
 ])
 
 # --------------------------------------------------------------------------- #

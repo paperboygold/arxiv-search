@@ -7,13 +7,24 @@ wire format the server expects, without being told how each time.
 
 **Defining trait:** the user requests are deliberately *messy and
 underspecified* - "go find me research on X", "papers on X for Y purpose to Z
-effect", "whats the hot stuff in image generation lately", "the rlhf kind of
-thing". The model's job is to **interpret** the request and translate it into a
-precise query: domain words -> arXiv category (`vision` -> `cs.CV`, `speech` ->
-`eess.AS`, `RL` -> `cs.LG`), "recent/lately/these days" -> `sort: date`, and
-intent -> abstract field terms. Every tool-call turn carries a short note that
-makes that interpretation step explicit, so the model learns to reason from a
-vague ask to a structured call.
+effect", "go find the current SoTA on …", "ground yourself against arxiv and …",
+"the rlhf kind of thing". The model's job is to **interpret** the request and
+translate it into a precise query: domain words -> arXiv category (`vision` ->
+`cs.CV`, `speech` -> `eess.AS`, `RL` -> `cs.LG`), "recent/lately/SoTA/right now"
+-> `sort: date`, and intent -> abstract field terms. Every tool-call turn
+carries a short note that makes that interpretation step explicit, so the model
+learns to reason from a vague ask to a structured call.
+
+Two request styles get dedicated coverage:
+
+- **"find the current SoTA / state of the art on X"** -> date-sorted discovery
+  that surfaces the leading *recent* work, with the honest caveat that arXiv is
+  not a live benchmark leaderboard.
+- **"ground yourself against arxiv" / "don't answer from memory, check first"**
+  -> the anti-hallucination pattern: search/read the source *before* answering,
+  cite the paper, and **correct the user** when the paper disagrees (e.g. that
+  attention predates the Transformer; the Transformer was the first
+  attention-*only* model).
 
 - **Format:** OpenAI chat fine-tuning JSONL (one JSON object per line, with
   `messages`, `tools`, `parallel_tool_calls`).
@@ -26,7 +37,7 @@ vague ask to a structured call.
 
 | File | Purpose |
 |---|---|
-| `arxiv_mcp_sft.jsonl` | The dataset. 41 conversations, ready for SFT. |
+| `arxiv_mcp_sft.jsonl` | The dataset. 50 conversations, ready for SFT. |
 | `build_dataset.py` | Hand-curated examples + serialization + validation. Re-run to regenerate the JSONL. |
 | `README.md` | This file. |
 
@@ -76,12 +87,16 @@ server, so most examples reinforce it. The dataset also reinforces:
 | `execute` | one `Operation` or an **array** of them: `{op, id, limit, ...}` where `op` ∈ `abstract` \| `download` \| `citations` \| `recs` \| `retrieve` | `{id, op, result}` (or an array thereof) |
 | `hdrr` | `{q, limit_docs, limit_chunks}` | `{query, routed_documents[], chunks[]}` |
 
-The set is **discovery-heavy** by design (tool-call mix: `search` 39,
-`execute` 7, `retrieve_paper` 3, `hdrr` 2), because the target behavior is
+The set is **discovery-heavy** by design (tool-call mix: `search` 48,
+`execute` 10, `retrieve_paper` 4, `hdrr` 2), because the target behavior is
 "just go find papers off a poorly-structured instruction". Skills exercised:
 
 - inferring arXiv **category** filters from domain words, and `sort: date` from
-  recency cues;
+  recency cues ("recent", "lately", "SoTA", "right now");
+- **SoTA requests**: surfacing the leading recent work while flagging that
+  arXiv isn't a live leaderboard;
+- **grounding/verification**: searching or reading the source before answering,
+  citing it, and correcting the user when it contradicts their assumption;
 - field-filtered queries (`ti:` `au:` `abs:` `cat:`, `ANDNOT` exclusions);
 - resolving a **title or vague reference to an ID via `search`** instead of
   guessing the ID;
